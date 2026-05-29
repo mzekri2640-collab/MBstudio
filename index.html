@@ -6,10 +6,20 @@
 <meta name="theme-color" content="#2F3A1E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UN JOUR UN OLIVIER</title>
+<title>Un Jour Un Olivier — Le temple de l'arbre de vie</title>
+<meta name="description" content="Pépinière d'exception à Chanas. Oliviers millénaires et palmiers centenaires, suivi personnalisé de vos arbres et conciergerie privée.">
+<meta name="apple-mobile-web-app-title" content="Un Jour Un Olivier">
+<meta property="og:title" content="Un Jour Un Olivier">
+<meta property="og:description" content="Le temple de l'arbre de vie — pépinière d'exception.">
+<meta property="og:image" content="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-logo.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-logo.png">
+<link rel="apple-touch-icon" href="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <style>
 /* ============================================
    UN JOUR... UN OLIVIER — App mobile
@@ -33,6 +43,13 @@
   --border:#E5DDC9;
   --shadow:0 1px 2px rgba(31,33,18,.04), 0 12px 32px -8px rgba(31,33,18,.12);
   --shadow-lg:0 4px 12px rgba(31,33,18,.06), 0 24px 48px -12px rgba(31,33,18,.18);
+  --shadow-soft:0 2px 8px -2px rgba(31,33,18,.06), 0 8px 24px -10px rgba(31,33,18,.10);
+  --shadow-card:0 1px 1px rgba(31,33,18,.03), 0 4px 8px -2px rgba(31,33,18,.05), 0 16px 32px -12px rgba(31,33,18,.12);
+
+  /* Courbes d'animation signature */
+  --ease-out-expo:cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --ease-smooth:cubic-bezier(.4,0,.2,1);
 
   /* Typographie */
   --serif:'Fraunces', Georgia, serif;
@@ -52,7 +69,13 @@ body{
   font-size:15px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
   display:flex;align-items:center;justify-content:center;
+}
+/* Fraunces : optical sizing pour un rendu raffiné aux grandes tailles */
+h1,h2,h3,h4,.detail-title,.tip-h,.hero-content h2,.tips-hero h1{
+  font-optical-sizing:auto;
+  font-feature-settings:"liga" 1, "calt" 1;
 }
 
 /* ============================================
@@ -127,31 +150,770 @@ body{
   -webkit-overflow-scrolling:touch;
   padding-bottom:96px;
   opacity:0;pointer-events:none;
-  transform:translateX(20px);
-  transition:opacity .35s ease, transform .35s ease;
+  transform:scale(.985);
+  transition:opacity .4s var(--ease-smooth), transform .4s var(--ease-out-expo);
 }
-.screen.active{opacity:1;pointer-events:auto;transform:translateX(0);}
+.screen.active{opacity:1;pointer-events:auto;transform:scale(1);}
+
+/* Révélation en cascade du contenu à l'entrée d'un écran */
+@keyframes revealUp{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ============================================
+   POLISH — micro-interactions & profondeur
+   ============================================ */
+::selection{background:var(--gold-light);color:var(--olive-deep);}
+
+/* Transitions tactiles cohérentes (easing signature) */
+.tip-card,.menu-item,.customer-card,.tree-card,.lead-card,
+.arrival-card-sm,.gallery-grid-sm-item,.mosaic-item,.tip-featured,
+.contact-card,.highlight-card{
+  transition:transform .4s var(--ease-out-expo), box-shadow .4s var(--ease-out-expo), background .25s var(--ease-smooth);
+  will-change:transform;
+}
+.tip-card:active,.menu-item:active,.customer-card:active,.tree-card:active,
+.arrival-card-sm:active,.contact-card:active,.highlight-card:active{
+  transform:scale(.978);
+}
+.gallery-grid-sm-item:active,.mosaic-item:active{transform:scale(.96);}
+
+.btn{transition:transform .3s var(--ease-spring), box-shadow .35s var(--ease-out-expo), opacity .2s, background .25s;}
+.btn:active{transform:scale(.97);}
+
+.icon-btn{transition:transform .3s var(--ease-spring), background .25s;}
+.icon-btn:active{transform:scale(.9);}
+
+.sheet-close:active{transform:scale(.88);}
+.pill{transition:all .3s var(--ease-out-expo);}
+.pill:active{transform:scale(.94);}
+
+/* Profondeur affinée sur les surfaces premium */
+.feed-card{box-shadow:var(--shadow-card);}
+
+/* Images : fondu doux au chargement */
+.feed-carousel-track img,.mosaic-item img,.tree-photo img,
+.gallery-grid-sm-item img,.arrival-card-sm-img img{
+  transition:opacity .5s var(--ease-smooth), transform .6s var(--ease-out-expo);
+}
+
+/* ============================================
+   ÉTATS — Skeletons de chargement & vides
+   ============================================ */
+@keyframes shimmer{
+  0%{background-position:-360px 0;}
+  100%{background-position:360px 0;}
+}
+.skel{
+  background:linear-gradient(90deg, var(--cream-warm) 25%, #eae1cb 50%, var(--cream-warm) 75%);
+  background-size:720px 100%;
+  animation:shimmer 1.5s infinite linear;
+  border-radius:10px;
+}
+.skel-card{
+  background:var(--bone);
+  border:1px solid var(--border);
+  border-radius:24px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.skel-img{width:100%;aspect-ratio:4/3;border-radius:0;}
+.skel-pad{padding:18px 18px 20px;}
+.skel-line{height:13px;margin-bottom:10px;}
+.skel-line.title{height:20px;width:70%;margin-bottom:14px;}
+.skel-line.short{width:45%;}
+.skel-line.mid{width:85%;}
+.skel-gallery{
+  aspect-ratio:1;border-radius:14px;
+}
+.skel-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  padding:0 24px;
+}
+
+/* Empty states premium */
+.empty-state{
+  text-align:center;
+  padding:56px 36px;
+  display:flex;flex-direction:column;align-items:center;
+  animation:revealUp .6s var(--ease-out-expo) both;
+}
+.empty-state-icon{
+  width:84px;height:84px;border-radius:24px;
+  background:linear-gradient(145deg, var(--cream-warm), var(--bone));
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;margin-bottom:20px;
+  box-shadow:var(--shadow-soft);
+  position:relative;
+}
+.empty-state-icon::after{
+  content:'';position:absolute;inset:-1px;border-radius:24px;
+  background:radial-gradient(circle at 30% 20%, rgba(217,197,166,.35), transparent 60%);
+}
+.empty-state h3{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:21px;color:var(--olive-deep);
+  margin-bottom:8px;line-height:1.2;
+}
+.empty-state p{
+  font-size:14px;color:var(--stone);line-height:1.55;
+  max-width:280px;margin-bottom:22px;
+}
+.empty-state .btn{width:auto;padding-left:24px;padding-right:24px;}
+
+/* ============================================
+   ACCUEIL — Vitrine éditoriale de marque
+   ============================================ */
+/* En-tête de section éditorial (centré, distinct du catalogue) */
+.editorial-head{
+  text-align:center;
+  padding:38px 32px 18px;
+}
+.editorial-head .eyebrow{
+  font-size:11px;text-transform:uppercase;letter-spacing:.24em;
+  color:var(--gold-deep);font-weight:600;margin-bottom:10px;
+}
+.editorial-head h3{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:27px;color:var(--olive-deep);line-height:1.12;
+  letter-spacing:-.01em;
+}
+.editorial-head .ornament{
+  width:40px;height:1px;background:var(--gold);
+  margin:14px auto 0;opacity:.6;
+}
+
+/* Bloc histoire de la maison */
+.brand-story{
+  padding:30px 32px 20px;
+  text-align:center;
+}
+.brand-story p{
+  font-family:var(--serif);font-weight:300;
+  font-size:17px;line-height:1.7;color:var(--charcoal-soft,#4a4a3d);
+  max-width:340px;margin:0 auto 18px;
+}
+.brand-story p em{font-style:italic;color:var(--olive-deep);}
+.brand-story .forbes{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:10px 18px;border-radius:100px;
+  background:var(--bone);border:1px solid var(--border);
+  box-shadow:var(--shadow-soft);
+}
+.brand-story .forbes .f{
+  font-family:var(--serif);font-weight:600;font-size:17px;
+  color:var(--olive-deep);
+}
+.brand-story .forbes .t{
+  font-size:11px;color:var(--stone);text-align:left;line-height:1.3;
+  letter-spacing:.02em;
+}
+
+/* Accès rapides — tuiles vers les univers */
+.quick-access{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  padding:8px 24px 12px;
+}
+.quick-tile{
+  background:var(--bone);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:18px;
+  min-height:128px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:var(--shadow-soft);
+}
+.quick-tile::after{
+  content:'';position:absolute;right:-20px;bottom:-20px;
+  width:70px;height:70px;border-radius:50%;
+  background:radial-gradient(circle, var(--cream-warm), transparent 70%);
+  opacity:.7;
+}
+.quick-tile-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:var(--cream-warm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--olive-deep);position:relative;z-index:2;
+}
+.quick-tile-icon svg{width:21px;height:21px;}
+.quick-tile-txt{position:relative;z-index:2;}
+.quick-tile h4{
+  font-family:var(--serif);font-weight:500;font-size:17px;
+  color:var(--olive-deep);line-height:1.1;margin-bottom:3px;
+}
+.quick-tile .sub{font-size:11.5px;color:var(--stone);line-height:1.3;}
+.quick-tile.feature{
+  grid-column:1 / -1;flex-direction:row;align-items:center;gap:16px;
+  min-height:auto;
+  background:linear-gradient(135deg, var(--olive-deep), var(--olive));
+}
+.quick-tile.feature .quick-tile-icon{background:rgba(255,254,249,.16);color:var(--gold-light);}
+.quick-tile.feature h4{color:var(--cream);}
+.quick-tile.feature .sub{color:var(--gold-light);}
+.quick-tile.feature::after{background:radial-gradient(circle, rgba(193,154,107,.3), transparent 70%);}
+
+/* Coup de cœur éditorial (un seul arbre mis en scène) */
+.home-featured{
+  margin:0 24px;
+  border-radius:26px;overflow:hidden;position:relative;
+  box-shadow:var(--shadow-card);cursor:pointer;
+  aspect-ratio:4/5;
+  background:var(--olive-deep);
+}
+.home-featured img{
+  width:100%;height:100%;object-fit:cover;
+}
+.home-featured::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(31,33,18,0) 30%, rgba(31,33,18,.5) 65%, rgba(31,33,18,.9) 100%);
+}
+.home-featured-tag{
+  position:absolute;top:18px;left:18px;z-index:3;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:100px;
+  background:rgba(255,254,249,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,254,249,.25);
+  color:var(--cream);
+  font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:600;
+}
+.home-featured-content{
+  position:absolute;left:24px;right:24px;bottom:24px;z-index:3;
+  color:var(--cream);
+}
+.home-featured-content .cat{
+  font-size:11px;text-transform:uppercase;letter-spacing:.16em;
+  color:var(--gold-light);font-weight:600;margin-bottom:8px;
+}
+.home-featured-content h3{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:30px;line-height:1.05;margin-bottom:10px;
+}
+.home-featured-content p{
+  font-size:13.5px;line-height:1.5;color:rgba(255,254,249,.82);
+  margin-bottom:16px;max-width:90%;
+}
+.home-featured-content .discover{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--cream);
+  border-bottom:1px solid var(--gold-light);padding-bottom:3px;
+}
+.home-featured-content .discover svg{width:15px;height:15px;}
+
+/* CTA visite */
+.visit-cta{
+  margin:0 24px;
+  border-radius:24px;
+  background:linear-gradient(150deg, var(--olive-deep) 0%, var(--olive) 100%);
+  color:var(--cream);padding:30px 26px;
+  position:relative;overflow:hidden;text-align:center;
+}
+.visit-cta::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle, var(--gold), transparent 65%);opacity:.18;
+}
+.visit-cta .eyebrow{
+  font-size:10px;text-transform:uppercase;letter-spacing:.22em;
+  color:var(--gold-light);font-weight:600;margin-bottom:10px;position:relative;z-index:2;
+}
+.visit-cta h3{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:25px;line-height:1.15;margin-bottom:8px;position:relative;z-index:2;
+}
+.visit-cta p{
+  font-size:13px;color:rgba(255,254,249,.78);line-height:1.5;
+  margin-bottom:20px;position:relative;z-index:2;
+}
+.visit-cta .btn{
+  position:relative;z-index:2;width:auto;display:inline-flex;
+  padding:13px 26px;
+  background:var(--cream);color:var(--olive-deep);
+}
+.visit-cta .btn:active{background:var(--bone);}
+
+/* Mosaïque réalisations sur l'accueil (réutilise gallery-grid-sm) */
+.home-realisations{padding:0 24px 8px;}
+
+/* ============================================
+   DASHBOARD ARBRE VIP — suivi de santé
+   ============================================ */
+.tree-dash-hero{
+  position:relative;height:200px;border-radius:20px;overflow:hidden;
+  margin-bottom:20px;background:var(--olive-deep);
+}
+.tree-dash-hero img{width:100%;height:100%;object-fit:cover;}
+.tree-dash-hero::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(31,33,18,0) 40%, rgba(31,33,18,.85) 100%);
+}
+.tree-dash-hero-content{
+  position:absolute;left:18px;right:18px;bottom:16px;z-index:2;color:var(--cream);
+}
+.tree-dash-hero-content .variety{
+  font-size:11px;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--gold-light);font-weight:600;margin-bottom:4px;
+}
+.tree-dash-hero-content h2{
+  font-family:var(--serif);font-style:italic;font-weight:400;font-size:26px;line-height:1.1;
+}
+
+/* Jauge indice de santé */
+.health-block{
+  display:flex;align-items:center;gap:20px;
+  background:var(--bone);border:1px solid var(--border);
+  border-radius:20px;padding:22px;margin-bottom:18px;
+  box-shadow:var(--shadow-soft);
+}
+.health-gauge{
+  --score:0;--gauge:var(--olive);
+  width:118px;height:118px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(var(--gauge) calc(var(--score)*1%), var(--cream-warm) 0);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  transition:background 1s var(--ease-out-expo);
+}
+.health-gauge::before{
+  content:'';position:absolute;inset:11px;border-radius:50%;background:var(--bone);
+}
+.health-gauge-inner{position:relative;z-index:2;text-align:center;}
+.health-gauge-inner .num{
+  font-family:var(--serif);font-weight:500;font-size:30px;color:var(--olive-deep);line-height:1;
+}
+.health-gauge-inner .unit{font-size:12px;color:var(--stone);}
+.health-info{flex:1;min-width:0;}
+.health-info .label{
+  font-size:10px;text-transform:uppercase;letter-spacing:.16em;
+  color:var(--gold-deep);font-weight:600;margin-bottom:5px;
+}
+.health-info h3{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:21px;margin-bottom:6px;line-height:1.1;
+}
+.health-info h3.excellent{color:#3d7a3d;}
+.health-info h3.bon{color:var(--olive-deep);}
+.health-info h3.vigilance{color:#b8860b;}
+.health-info h3.attention{color:#b13e2e;}
+.health-info p{font-size:12.5px;color:var(--stone);line-height:1.45;}
+
+/* Cartes indicateurs */
+.metrics-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;
+}
+.metric-card{
+  background:var(--bone);border:1px solid var(--border);
+  border-radius:16px;padding:14px 10px;text-align:center;
+}
+.metric-card .ico{font-size:22px;margin-bottom:6px;line-height:1;}
+.metric-card .val{
+  font-family:var(--serif);font-weight:500;font-size:21px;color:var(--olive-deep);line-height:1;
+}
+.metric-card .val .u{font-size:12px;color:var(--stone);}
+.metric-card .name{
+  font-size:10px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--stone);font-weight:500;margin-top:5px;
+}
+.metric-card .state{
+  font-size:10px;font-weight:600;margin-top:4px;
+  padding:2px 7px;border-radius:100px;display:inline-block;
+}
+.metric-card .state.good{background:#e6f0e0;color:#3d7a3d;}
+.metric-card .state.warn{background:#fdf0e8;color:#b13e2e;}
+.metric-card .state.mid{background:var(--cream-warm);color:var(--gold-deep);}
+
+/* Recommandation */
+.dash-reco{
+  background:linear-gradient(135deg,#faf3e3,#f3e4c4);
+  border:1px solid #e6c990;border-radius:16px;
+  padding:16px 16px 16px 48px;position:relative;
+  font-size:13.5px;line-height:1.55;color:#6b4d18;margin-bottom:18px;
+}
+.dash-reco::before{content:'🌿';position:absolute;left:15px;top:15px;font-size:20px;}
+.dash-reco .label{
+  display:block;font-size:10px;text-transform:uppercase;letter-spacing:.14em;
+  font-weight:700;margin-bottom:4px;color:var(--gold-deep);
+}
+
+/* Source + capteur à venir */
+.dash-source{
+  font-size:11px;color:var(--stone);text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-bottom:16px;
+}
+.dash-source svg{width:13px;height:13px;}
+.dash-sensor-teaser{
+  background:var(--cream-warm);border:1px dashed var(--border);
+  border-radius:14px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.dash-sensor-teaser .ico{
+  width:38px;height:38px;border-radius:11px;background:var(--bone);
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.dash-sensor-teaser .txt{flex:1;}
+.dash-sensor-teaser .txt b{font-size:13px;color:var(--olive-deep);display:block;margin-bottom:2px;}
+.dash-sensor-teaser .txt span{font-size:11.5px;color:var(--stone);line-height:1.4;}
+
+/* Skeleton dashboard */
+.dash-loading{padding:30px 0;text-align:center;}
+.dash-loading .skel{height:118px;width:118px;border-radius:50%;margin:0 auto 16px;}
+.dash-loading .skel.l{height:14px;width:60%;margin:0 auto 10px;border-radius:8px;}
+
+/* Message d'accueil personnalisé VIP */
+.welcome-msg{
+  font-family:var(--serif);font-style:italic;font-weight:300;
+  font-size:14.5px;line-height:1.5;color:var(--stone);
+  margin:8px 0 4px;max-width:300px;
+}
+
+/* ============================================
+   FICHE ARBRE VIP — sections premium
+   ============================================ */
+.dash-section-head{
+  display:flex;align-items:center;gap:10px;
+  margin:26px 2px 14px;
+}
+.dash-section-head .line{flex:1;height:1px;background:var(--border);}
+.dash-section-head h4{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:16px;color:var(--olive-deep);white-space:nowrap;
+}
+
+/* — Certificat d'authenticité — */
+.certificate{
+  position:relative;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(217,197,166,.18), transparent 50%),
+    linear-gradient(160deg, #fdfaf2, #f6efdf);
+  border:1px solid #e6d3a8;
+  border-radius:18px;
+  padding:24px 22px 20px;
+  overflow:hidden;
+  box-shadow:var(--shadow-card);
+}
+.certificate::before{
+  content:'';position:absolute;inset:7px;
+  border:1px solid rgba(193,154,107,.35);border-radius:12px;pointer-events:none;
+}
+.cert-head{text-align:center;margin-bottom:18px;position:relative;z-index:2;}
+.cert-head .crest{
+  width:46px;height:46px;margin:0 auto 10px;
+  border-radius:50%;border:1.5px solid var(--gold-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:600;font-size:20px;color:var(--olive-deep);
+  background:rgba(255,254,249,.6);
+}
+.cert-head .title{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:19px;color:var(--olive-deep);line-height:1.1;
+}
+.cert-head .sub{
+  font-size:10px;text-transform:uppercase;letter-spacing:.2em;
+  color:var(--gold-deep);font-weight:600;margin-top:5px;
+}
+.cert-rows{position:relative;z-index:2;margin-bottom:16px;}
+.cert-row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:9px 0;border-bottom:1px dotted rgba(193,154,107,.3);
+}
+.cert-row:last-child{border-bottom:none;}
+.cert-row .k{
+  font-size:10px;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--stone);font-weight:600;flex-shrink:0;
+}
+.cert-row .v{
+  font-family:var(--serif);font-size:14.5px;color:var(--charcoal);
+  text-align:right;line-height:1.3;
+}
+.cert-foot{
+  position:relative;z-index:2;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-top:6px;padding-top:14px;border-top:1px solid rgba(193,154,107,.3);
+}
+.cert-foot .num{font-size:11px;color:var(--stone);letter-spacing:.05em;}
+.cert-foot .num b{display:block;color:var(--olive-deep);font-size:12.5px;letter-spacing:.1em;margin-top:2px;}
+.cert-foot .sig{
+  font-family:var(--serif);font-style:italic;font-size:13px;color:var(--olive-deep);text-align:right;
+}
+.cert-foot .sig span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--stone);font-style:normal;margin-top:3px;}
+
+/* — Conciergerie — */
+.concierge{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg, var(--olive-deep), var(--olive));
+  border-radius:18px;padding:18px;color:var(--cream);
+  position:relative;overflow:hidden;
+}
+.concierge::after{
+  content:'';position:absolute;right:-25px;top:-25px;width:110px;height:110px;border-radius:50%;
+  background:radial-gradient(circle, rgba(193,154,107,.35), transparent 65%);
+}
+.concierge-avatar{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,254,249,.16);border:1px solid rgba(255,254,249,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:22px;color:var(--gold-light);position:relative;z-index:2;
+}
+.concierge-txt{flex:1;position:relative;z-index:2;min-width:0;}
+.concierge-txt .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--gold-light);font-weight:600;margin-bottom:2px;}
+.concierge-txt .nm{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.1;}
+.concierge-txt .role{font-size:11.5px;color:rgba(255,254,249,.7);margin-top:1px;}
+.concierge-actions{display:flex;gap:8px;margin-top:14px;position:relative;z-index:2;}
+.concierge-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px;border-radius:12px;border:none;cursor:pointer;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+}
+.concierge-btn svg{width:16px;height:16px;}
+.concierge-btn.call{background:var(--cream);color:var(--olive-deep);}
+.concierge-btn.wa{background:#25d366;color:#fff;}
+.concierge-btn:active{transform:scale(.97);}
+
+/* — Calendrier de soins — */
+.care-item{
+  display:flex;gap:13px;align-items:flex-start;
+  background:var(--bone);border:1px solid var(--border);
+  border-radius:14px;padding:14px;margin-bottom:10px;
+}
+.care-item .ico{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:var(--cream-warm);display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.care-item .body{flex:1;min-width:0;}
+.care-item .when{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-deep);font-weight:600;margin-bottom:3px;}
+.care-item h5{font-family:var(--sans);font-weight:600;font-size:14px;color:var(--olive-deep);margin-bottom:3px;}
+.care-item p{font-size:12.5px;color:var(--stone);line-height:1.45;}
+.care-item.now{border-color:#e6c990;background:linear-gradient(135deg,#faf3e3,#fdfaf2);}
+
+/* — Carnet de l'arbre (timeline) — */
+.journal{position:relative;padding-left:24px;}
+.journal::before{
+  content:'';position:absolute;left:5px;top:6px;bottom:6px;width:1.5px;
+  background:linear-gradient(var(--gold), var(--border));
+}
+.journal-entry{position:relative;margin-bottom:18px;}
+.journal-entry:last-child{margin-bottom:0;}
+.journal-entry::before{
+  content:'';position:absolute;left:-23px;top:3px;width:11px;height:11px;border-radius:50%;
+  background:var(--bone);border:2px solid var(--gold);
+}
+.journal-entry.milestone::before{background:var(--gold);}
+.journal-entry .date{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-deep);font-weight:600;margin-bottom:3px;}
+.journal-entry h5{font-family:var(--serif);font-style:italic;font-weight:500;font-size:15px;color:var(--olive-deep);margin-bottom:3px;}
+.journal-entry p{font-size:12.5px;color:var(--stone);line-height:1.45;}
+.journal-add{
+  width:100%;margin-top:6px;padding:11px;border-radius:12px;
+  background:var(--cream-warm);border:1px dashed var(--border);
+  color:var(--olive-deep);font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.journal-add svg{width:15px;height:15px;}
+.journal-add:active{transform:scale(.98);}
+
+/* Carnet éditable (admin) */
+.tj-edit-item{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--cream-warm);border:1px solid var(--border);
+  border-radius:12px;padding:11px 12px;margin-bottom:8px;
+}
+.tj-edit-item .c{flex:1;min-width:0;}
+.tj-edit-item .c .t{font-weight:600;font-size:13px;color:var(--olive-deep);}
+.tj-edit-item .c .n{font-size:12px;color:var(--stone);line-height:1.4;margin-top:2px;}
+.tj-edit-item .c .d{font-size:10px;color:var(--gold-deep);text-transform:uppercase;letter-spacing:.1em;margin-top:3px;}
+.tj-edit-item .rm{
+  background:none;border:none;color:#b13e2e;cursor:pointer;flex-shrink:0;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+}
+.tj-edit-item .rm svg{width:16px;height:16px;}
+
+/* Graphique historique de santé */
+.health-chart{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:7px;
+  height:104px;padding:12px 14px 0;
+  background:var(--bone);border:1px solid var(--border);border-radius:16px;
+}
+.hc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end;}
+.hc-bar{
+  width:100%;max-width:26px;border-radius:6px 6px 3px 3px;min-height:4px;
+  transform-origin:bottom;animation:hcGrow .7s var(--ease-out-expo) both;
+}
+@keyframes hcGrow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+.hc-col span{font-size:10px;color:var(--stone);font-weight:600;}
+.hc-note{text-align:center;font-size:11px;color:var(--stone);margin-top:8px;}
+
+/* Lettre de saison */
+.season-letter{
+  position:relative;
+  background:linear-gradient(165deg, #fdfaf2, #f6efe0);
+  border:1px solid #e6d3a8;border-radius:18px;
+  padding:22px 22px 20px;overflow:hidden;
+}
+.season-letter::before{
+  content:'';position:absolute;top:-20px;right:-20px;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle, rgba(193,154,107,.25), transparent 65%);
+}
+.season-letter .season-tag{
+  font-size:10px;text-transform:uppercase;letter-spacing:.2em;
+  color:var(--gold-deep);font-weight:600;margin-bottom:12px;position:relative;z-index:2;
+}
+.season-letter .body{
+  font-family:var(--serif);font-weight:300;font-size:15px;line-height:1.7;
+  color:var(--charcoal);position:relative;z-index:2;
+}
+.season-letter .body p{margin-bottom:11px;}
+.season-letter .sig{
+  font-family:var(--serif);font-style:italic;font-size:17px;color:var(--olive-deep);
+  margin-top:6px;position:relative;z-index:2;
+}
+.season-letter .sig span{
+  display:block;font-style:normal;font-family:var(--sans);
+  font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--stone);margin-top:2px;
+}
+
+/* Bouton télécharger certificat */
+.cert-download{
+  width:100%;margin-top:14px;padding:13px;border-radius:12px;
+  background:var(--olive-deep);color:var(--cream);border:none;cursor:pointer;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;position:relative;z-index:2;
+}
+.cert-download svg{width:16px;height:16px;}
+.cert-download:active{transform:scale(.98);}
+
+/* Bouton prise de RDV dans la conciergerie */
+.concierge-rdv{
+  width:100%;margin-top:8px;padding:12px;border-radius:12px;
+  background:var(--cream-warm);border:1px solid var(--border);color:var(--olive-deep);
+  font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.concierge-rdv svg{width:16px;height:16px;}
+.concierge-rdv:active{transform:scale(.98);}
+
+/* Pills de sélection (type de visite) */
+.rdv-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.rdv-pill{
+  padding:9px 15px;border-radius:100px;border:1px solid var(--border);
+  background:var(--bone);color:var(--charcoal);font-size:13px;cursor:pointer;
+  transition:all .25s var(--ease-out-expo);
+}
+.rdv-pill.active{background:var(--olive-deep);color:var(--cream);border-color:var(--olive-deep);}
+
+/* Scanner QR caméra */
+.scanner-overlay{
+  position:absolute;inset:0;z-index:300;background:#0a0b07;
+  display:none;align-items:center;justify-content:center;
+}
+.scanner-overlay.visible{display:flex;}
+.scanner-overlay video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.scan-mask{position:absolute;inset:0;background:rgba(10,11,7,.55);}
+.scan-frame{
+  position:relative;z-index:2;width:62vw;max-width:260px;aspect-ratio:1;
+  border-radius:28px;box-shadow:0 0 0 100vmax rgba(10,11,7,.55);
+}
+.scan-frame .c{position:absolute;width:26px;height:26px;border:3px solid var(--gold-light);}
+.scan-frame .c.tl{top:-2px;left:-2px;border-right:none;border-bottom:none;border-radius:14px 0 0 0;}
+.scan-frame .c.tr{top:-2px;right:-2px;border-left:none;border-bottom:none;border-radius:0 14px 0 0;}
+.scan-frame .c.bl{bottom:-2px;left:-2px;border-right:none;border-top:none;border-radius:0 0 0 14px;}
+.scan-frame .c.br{bottom:-2px;right:-2px;border-left:none;border-top:none;border-radius:0 0 14px 0;}
+.scan-hint{
+  position:absolute;z-index:3;bottom:24%;left:24px;right:24px;text-align:center;
+  color:rgba(255,255,255,.92);font-size:14px;font-weight:500;line-height:1.4;
+  text-shadow:0 1px 6px rgba(0,0,0,.5);
+}
+.scan-close{
+  position:absolute;z-index:4;top:calc(18px + env(safe-area-inset-top));right:20px;
+  width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(10px);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+}
+.scan-close svg{width:20px;height:20px;}
+.scan-manual-btn{
+  position:absolute;z-index:4;bottom:calc(40px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);
+  color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;
+  padding:11px 22px;border-radius:100px;cursor:pointer;white-space:nowrap;
+}
+
+/* Garantie & accompagnement */
+.warranty{
+  background:var(--bone);border:1px solid var(--border);
+  border-radius:18px;padding:18px;
+}
+.warranty-status{
+  display:flex;align-items:center;gap:12px;
+  padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--border);
+}
+.warranty-status .shield{
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:#e6f0e0;color:#3d7a3d;
+}
+.warranty-status.expired .shield{background:var(--cream-warm);color:var(--stone);}
+.warranty-status .shield svg{width:22px;height:22px;}
+.warranty-status b{font-size:14.5px;color:var(--olive-deep);display:block;}
+.warranty-status span{font-size:12px;color:var(--stone);}
+.warranty-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.warranty-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;color:var(--charcoal);line-height:1.4;
+}
+.warranty-list li svg{width:17px;height:17px;color:var(--gold-deep);flex-shrink:0;margin-top:1px;}
+
+/* Mot de bienvenue de Rachid */
+.welcome-card{padding:14px 6px 8px;text-align:center;}
+.welcome-card .crest{
+  width:64px;height:64px;margin:0 auto 18px;border-radius:50%;
+  border:1.5px solid var(--gold-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:600;font-size:26px;color:var(--olive-deep);
+  background:radial-gradient(circle at 30% 25%, rgba(217,197,166,.3), transparent 60%);
+}
+.welcome-card .eyebrow{
+  font-size:10px;text-transform:uppercase;letter-spacing:.22em;
+  color:var(--gold-deep);font-weight:600;margin-bottom:10px;
+}
+.welcome-card h2{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:26px;color:var(--olive-deep);line-height:1.15;margin-bottom:18px;
+}
+.welcome-card .letter{
+  font-family:var(--serif);font-weight:300;
+  font-size:15px;line-height:1.75;color:var(--charcoal);
+  text-align:left;max-width:330px;margin:0 auto 20px;
+}
+.welcome-card .letter p{margin-bottom:13px;}
+.welcome-card .sig{
+  text-align:left;max-width:330px;margin:0 auto 22px;
+  font-family:var(--serif);font-style:italic;font-size:16px;color:var(--olive-deep);
+}
+.welcome-card .sig span{
+  display:block;font-style:normal;font-family:var(--sans);
+  font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--stone);margin-top:3px;
+}
 .screen::-webkit-scrollbar{display:none;}
 
 /* ============================================
    Header (par écran)
    ============================================ */
 .header{
-  padding:10px 20px 14px;
-  display:grid;
-  grid-template-columns:40px 1fr 40px;
-  align-items:center;
+  padding:calc(10px + var(--safe-top)) 20px 14px;
+  display:flex;align-items:center;justify-content:space-between;
   background:var(--cream);
   position:sticky;top:0;z-index:50;
   backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
+  transition:padding .35s var(--ease-smooth), background .35s var(--ease-smooth), box-shadow .35s var(--ease-smooth);
 }
 .header.scrolled{
-  background:rgba(250,245,235,.92);
+  background:rgba(250,245,235,.85);
   border-bottom:1px solid var(--border);
+  padding-top:calc(5px + var(--safe-top));padding-bottom:8px;
+  box-shadow:0 4px 20px -8px rgba(31,33,18,.12);
 }
+.header.scrolled .header-brand img{height:42px;}
 .header-brand{
-  grid-column:2;justify-self:center;
   display:flex;align-items:center;
   cursor:pointer;
   user-select:none;
@@ -159,15 +921,15 @@ body{
   -webkit-user-select:none;
 }
 .header-brand img{
-  height:46px;width:auto;object-fit:contain;
+  height:58px;width:auto;object-fit:contain;
   -webkit-touch-callout:none;
   -webkit-user-select:none;
   user-select:none;
   -webkit-user-drag:none;
   pointer-events:none;
+  transition:height .35s var(--ease-smooth);
 }
 .header-actions{
-  grid-column:3;justify-self:end;
   display:flex;gap:8px;
 }
 .icon-btn{
@@ -226,9 +988,13 @@ body{
 }
 .hero img{
   width:100%;height:100%;object-fit:cover;
-  transition:transform 6s ease;
+  animation:kenBurns 22s var(--ease-smooth) infinite alternate;
 }
-.hero:hover img,.hero:active img{transform:scale(1.08);}
+@keyframes kenBurns{
+  0%{transform:scale(1) translate(0,0);}
+  100%{transform:scale(1.1) translate(-1.5%, -1%);}
+}
+.hero:active img{animation-play-state:paused;}
 .hero::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(180deg, rgba(31,33,18,0) 0%, rgba(31,33,18,0) 35%, rgba(31,33,18,.85) 100%);
@@ -461,6 +1227,92 @@ body{
   border-radius:8px;word-break:break-all;
   font-family:ui-monospace, monospace;
 }
+
+/* ============================================
+   LEADS — Console des prospects intéressés
+   ============================================ */
+.lead-card{
+  padding:16px;
+  background:var(--bone);
+  border:1px solid var(--border);
+  border-radius:16px;
+  margin-bottom:10px;
+  position:relative;
+}
+.lead-card.is-new{
+  border-color:var(--gold);
+  background:linear-gradient(135deg, var(--bone), var(--cream-warm));
+}
+.lead-card-top{
+  display:flex;align-items:center;gap:12px;margin-bottom:10px;
+}
+.lead-avatar{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--olive-deep),var(--olive-soft));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold-light);
+  font-family:var(--serif);font-style:italic;font-size:16px;
+}
+.lead-info{flex:1;min-width:0;}
+.lead-name{
+  font-weight:600;font-size:15px;color:var(--charcoal);
+  display:flex;align-items:center;gap:8px;
+}
+.lead-badge-new{
+  background:var(--gold);color:#fff;
+  font-size:9px;text-transform:uppercase;letter-spacing:.1em;
+  font-weight:700;padding:2px 7px;border-radius:100px;
+}
+.lead-phone{
+  font-size:13px;color:var(--olive-deep);font-weight:500;
+  margin-top:1px;
+}
+.lead-meta{
+  font-size:12px;color:var(--stone);
+  margin-bottom:12px;line-height:1.5;
+}
+.lead-meta .arbre{
+  color:var(--gold-deep);font-weight:500;
+}
+.lead-actions{
+  display:flex;gap:8px;
+}
+.lead-btn{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px;border-radius:10px;
+  font-size:13px;font-weight:600;
+  border:none;cursor:pointer;
+  transition:all .15s;
+}
+.lead-btn svg{width:15px;height:15px;}
+.lead-btn.call{background:var(--olive-deep);color:var(--cream);}
+.lead-btn.call:active{transform:scale(.97);}
+.lead-btn.done{background:var(--cream-warm);color:var(--olive-deep);border:1px solid var(--border);}
+.lead-btn.done:active{transform:scale(.97);}
+.lead-btn.del{
+  flex:0 0 auto;width:42px;
+  background:transparent;color:var(--stone);border:1px solid var(--border);
+}
+.lead-card.done-status{opacity:.65;}
+.lead-card.done-status .lead-badge-done{
+  background:var(--olive-soft);color:#fff;
+  font-size:9px;text-transform:uppercase;letter-spacing:.1em;
+  font-weight:700;padding:2px 7px;border-radius:100px;
+}
+
+/* Badge de comptage sur le menu admin */
+.menu-count-badge{
+  background:var(--gold);color:#fff;
+  font-size:11px;font-weight:700;
+  min-width:20px;height:20px;border-radius:100px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 6px;margin-left:auto;
+}
+.leads-filter{
+  display:flex;gap:8px;margin-bottom:16px;
+}
+.leads-filter .pill{flex:1;text-align:center;}
 
 /* ============================================
    BANNIÈRES MÉTÉO PERSONNALISÉES
@@ -926,6 +1778,172 @@ body{
 .tip-content strong:first-child{margin-top:0;}
 
 /* ============================================
+   CONSEILS — REFONTE PREMIUM
+   ============================================ */
+/* Hero éditorial d'intro */
+.tips-hero{
+  margin:0 0 24px;
+  padding:28px 24px 30px;
+  border-radius:0 0 28px 28px;
+  background:linear-gradient(150deg, var(--olive-deep) 0%, var(--olive) 55%, var(--olive-soft) 100%);
+  color:var(--cream);
+  position:relative;overflow:hidden;
+}
+.tips-hero::before{
+  content:'';position:absolute;top:-40px;right:-30px;
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle, var(--gold) 0%, transparent 65%);
+  opacity:.22;
+}
+.tips-hero::after{
+  content:'🫒';position:absolute;bottom:-18px;right:14px;
+  font-size:90px;opacity:.10;transform:rotate(-12deg);
+}
+.tips-hero .eyebrow{
+  font-size:10px;text-transform:uppercase;letter-spacing:.22em;
+  color:var(--gold-light);font-weight:600;margin-bottom:8px;
+}
+.tips-hero h1{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:30px;line-height:1.08;color:var(--cream);
+  letter-spacing:-.01em;margin-bottom:10px;position:relative;z-index:2;
+}
+.tips-hero p{
+  font-size:13.5px;line-height:1.55;color:rgba(255,254,249,.8);
+  max-width:90%;position:relative;z-index:2;
+}
+
+/* Fiche du moment (mise en avant saisonnière) */
+.tip-featured{
+  margin:0 24px 28px;
+  border-radius:22px;overflow:hidden;
+  background:var(--bone);
+  border:1px solid var(--gold);
+  box-shadow:0 8px 28px -12px rgba(122,78,26,.3);
+  cursor:pointer;transition:transform .2s;
+  position:relative;
+}
+.tip-featured:active{transform:scale(.99);}
+.tip-featured-banner{
+  height:120px;position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;
+  padding:14px 18px;
+}
+.tip-featured-banner::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, transparent 30%, rgba(0,0,0,.45) 100%);
+}
+.tip-featured-banner img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+.tip-featured-tag{
+  position:relative;z-index:2;
+  background:var(--gold);color:#fff;
+  font-size:10px;text-transform:uppercase;letter-spacing:.15em;
+  font-weight:700;padding:5px 12px;border-radius:100px;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.tip-featured-body{padding:16px 18px 18px;}
+.tip-featured-body .season{
+  font-size:11px;text-transform:uppercase;letter-spacing:.15em;
+  color:var(--gold-deep);font-weight:600;margin-bottom:5px;
+}
+.tip-featured-body h3{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:21px;color:var(--olive-deep);line-height:1.15;margin-bottom:7px;
+}
+.tip-featured-body p{font-size:13px;color:var(--stone);line-height:1.5;}
+
+/* Titres de section */
+.tips-section-title{
+  display:flex;align-items:center;gap:10px;
+  margin:0 24px 14px;
+}
+.tips-section-title .line{flex:1;height:1px;background:var(--border);}
+.tips-section-title span{
+  font-size:11px;text-transform:uppercase;letter-spacing:.18em;
+  color:var(--gold-deep);font-weight:600;white-space:nowrap;
+}
+.tips-section{margin-bottom:28px;}
+.tips-list{padding:0 24px;}
+
+/* Card enrichie */
+.tip-card .tip-meta-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:10px;
+}
+.tip-readtime{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;color:var(--stone);font-weight:500;
+}
+.tip-readtime svg{width:12px;height:12px;}
+.tip-level{
+  font-size:10px;text-transform:uppercase;letter-spacing:.1em;
+  font-weight:600;padding:2px 8px;border-radius:100px;
+  background:var(--cream-warm);color:var(--gold-deep);
+}
+
+/* ===== Fiche détaillée enrichie ===== */
+.tip-readtime-header{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:18px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.tip-readtime-header .item{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--stone);font-weight:500;
+}
+.tip-readtime-header .item svg{width:14px;height:14px;color:var(--gold-deep);}
+
+.tip-content h4.tip-h{
+  font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:19px;color:var(--olive-deep);
+  margin:24px 0 8px;
+}
+.tip-content h4.tip-h:first-child{margin-top:0;}
+.tip-content ul.tip-list{
+  list-style:none;margin:8px 0 14px;padding:0;
+}
+.tip-content ul.tip-list li{
+  position:relative;padding-left:22px;margin-bottom:8px;
+  font-size:14.5px;line-height:1.55;color:var(--charcoal);
+}
+.tip-content ul.tip-list li::before{
+  content:'';position:absolute;left:2px;top:9px;
+  width:6px;height:6px;border-radius:50%;background:var(--gold);
+}
+
+/* Encadrés premium */
+.tip-callout{
+  margin:16px 0;padding:15px 16px 15px 48px;
+  border-radius:14px;position:relative;
+  font-size:13.5px;line-height:1.55;
+}
+.tip-callout .tip-callout-label{
+  display:block;font-size:10px;text-transform:uppercase;letter-spacing:.14em;
+  font-weight:700;margin-bottom:4px;
+}
+.tip-callout::before{
+  position:absolute;left:15px;top:15px;font-size:20px;line-height:1;
+}
+.tip-callout.pro{
+  background:linear-gradient(135deg,#faf3e3,#f3e4c4);
+  color:#6b4d18;border:1px solid #e6c990;
+}
+.tip-callout.pro::before{content:'🌿';}
+.tip-callout.pro .tip-callout-label{color:var(--gold-deep);}
+.tip-callout.warn{
+  background:#fdf0e8;color:#8a3d22;border:1px solid #f0c4ac;
+}
+.tip-callout.warn::before{content:'⚠️';}
+.tip-callout.warn .tip-callout-label{color:#b13e2e;}
+.tip-callout.key{
+  background:var(--cream-warm);color:var(--olive-deep);border:1px solid var(--border);
+}
+.tip-callout.key::before{content:'📌';}
+.tip-callout.key .tip-callout-label{color:var(--olive);}
+
+/* ============================================
    ÉCRAN — PROFIL / MENU
    ============================================ */
 .profile-header{
@@ -936,11 +1954,22 @@ body{
   width:80px;height:80px;border-radius:50%;
   margin:0 auto 16px;
   background:linear-gradient(135deg, var(--olive-deep), var(--olive-soft));
+  background-size:cover;background-position:center;
   display:flex;align-items:center;justify-content:center;
   font-family:var(--serif);font-style:italic;
   font-size:32px;color:var(--gold-light);
-  position:relative;
+  position:relative;cursor:pointer;
+  transition:transform .3s var(--ease-spring);
 }
+.profile-avatar:active{transform:scale(.94);}
+.profile-avatar.has-photo{color:transparent;}
+.profile-avatar .avatar-cam{
+  position:absolute;bottom:-2px;right:-2px;z-index:4;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--olive-deep);border:2.5px solid var(--cream);
+  display:flex;align-items:center;justify-content:center;color:var(--gold-light);
+}
+.profile-avatar .avatar-cam svg{width:13px;height:13px;}
 .profile-avatar::after{
   content:'';position:absolute;inset:-3px;border-radius:50%;
   background:linear-gradient(135deg, var(--gold), var(--gold-light));
@@ -1048,21 +2077,27 @@ body{
   background:transparent;border:none;color:var(--stone);
   cursor:pointer;
   position:relative;
-  transition:color .2s;
+  transition:color .3s var(--ease-smooth);
 }
-.tab svg{width:22px;height:22px;transition:transform .2s;}
+.tab svg{width:22px;height:22px;transition:transform .4s var(--ease-spring);}
 .tab span{
   font-size:10px;font-weight:500;
   letter-spacing:.04em;
   font-family:var(--sans);
+  transition:opacity .3s;
 }
 .tab.active{color:var(--olive-deep);}
-.tab.active svg{transform:translateY(-1px);}
+.tab.active svg{transform:translateY(-1px) scale(1.08);}
 .tab.active::before{
-  content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);
-  width:4px;height:4px;border-radius:50%;background:var(--gold);
+  content:'';position:absolute;top:6px;left:50%;
+  width:36px;height:30px;border-radius:11px;
+  background:var(--cream-warm);
+  transform:translateX(-50%);
+  z-index:-1;
+  animation:tabPop .42s var(--ease-spring);
 }
-.tab:active svg{transform:scale(.88);}
+@keyframes tabPop{from{transform:translateX(-50%) scale(.3);opacity:0;}to{transform:translateX(-50%) scale(1);opacity:1;}}
+.tab:active svg{transform:scale(.82);}
 
 /* FAB admin */
 .fab{
@@ -1464,7 +2499,6 @@ body{
       </div>
       <div class="splash-tag">Le temple de l'arbre de vie</div>
       <div class="splash-loader"></div>
-      <div class="long-press-hint">Maintenez le logo pour le mode admin</div>
     </div>
 
     <!-- ============= ÉCRAN ACCUEIL ============= -->
@@ -1473,104 +2507,89 @@ body{
         <div class="header-brand" id="brandLogo">
           <img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-logo.png" alt="Logo">
         </div>
-        <div class="header-actions">
-          <button class="icon-btn badge" onclick="openNotifications()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-          </button>
-        </div>
       </div>
 
-      <div class="page-title fade-up">
-        <div class="eyebrow">Bonjour</div>
-        <h1>Découvrez nos <em>arrivages</em></h1>
-        <div class="subtitle">Une sélection méticuleuse d'arbres d'exception, fraîchement arrivés dans nos pépinières.</div>
-      </div>
-
-      <!-- Hero featured -->
-      <div class="hero fade-up-d1" id="heroSection" onclick="openHeroDetail()">
+      <!-- Hero immersif — affiche d'ambiance de la maison -->
+      <div class="hero fade-up" id="heroSection" onclick="openHeroDetail()">
         <button class="hero-admin-btn" onclick="event.stopPropagation();openEditHero();" aria-label="Modifier le hero">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>
         </button>
-        <img id="heroImage" src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f8c5a33f-767f-443b-a645-6091abe03b61-768x576-1.png" alt="Olivier millénaire" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,var(--olive-deep),var(--olive))'">
+        <img id="heroImage" src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f8c5a33f-767f-443b-a645-6091abe03b61-768x576-1.png" alt="Olivier d'exception" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,var(--olive-deep),var(--olive))'">
         <div class="hero-content">
-          <div class="hero-badge" id="heroBadge">Arrivage de la semaine</div>
-          <h2 id="heroTitle"><span class="normal">Oliviers</span> millénaires</h2>
+          <div class="hero-badge" id="heroBadge">Pépinière d'exception · Chanas</div>
+          <h2 id="heroTitle">Le temple de l'<span class="normal">arbre de vie</span></h2>
           <div class="hero-meta" id="heroMeta">
-            <span>4 nouvelles pièces</span>
-            <span class="dot"></span>
-            <span>Pépinière de Chanas</span>
+            <span>Oliviers & palmiers centenaires</span>
           </div>
         </div>
       </div>
 
-      <!-- Forbes highlight -->
-      <div class="highlight-card fade-up-d2">
-        <div class="highlight-icon">F</div>
-        <div class="highlight-text">
-          <div class="eyebrow">Forbes Magazine</div>
-          <h4>L'une des 5 pépinières d'exception à travers le monde</h4>
+      <!-- Histoire de la maison -->
+      <div class="brand-story">
+        <p>Depuis plus de vingt ans, nous parcourons la Méditerranée pour ramener les plus beaux <em>oliviers millénaires</em> et palmiers d'exception, et leur offrir une seconde vie dans vos jardins.</p>
+        <div class="forbes">
+          <span class="f">Forbes</span>
+          <span class="t">Parmi les 5 pépinières<br>d'exception au monde</span>
         </div>
       </div>
 
-      <!-- Catégories pills -->
-      <div class="pills" data-target="arrivalsStripHome">
-        <div class="pill active" data-filter="all">Tout</div>
-        <div class="pill" data-filter="olivier">Oliviers</div>
-        <div class="pill" data-filter="palmier">Palmiers</div>
-        <div class="pill" data-filter="centenaire">Centenaires</div>
-        <div class="pill" data-filter="millenaire">Millénaires</div>
-      </div>
-
-      <!-- Latest arrivals strip -->
-      <div class="section-head">
-        <h3>Derniers <em>arrivages</em></h3>
-        <a onclick="switchTab('arrivages')">Voir tout</a>
-      </div>
-      <div class="arrivals-strip" id="arrivalsStripHome">
-        <div class="arrival-card-sm" data-category="olivier centenaire" onclick="openDetail(1)">
-          <div class="arrival-card-sm-img">
-            <div class="arrival-card-sm-badge">Nouveau</div>
-            <img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-1.png" alt="" onerror="this.style.display='none'">
-          </div>
-          <div class="arrival-card-sm-body">
-            <h4>Olivier centenaire</h4>
-            <div class="meta">Cette semaine</div>
-          </div>
+      <!-- Accès rapides vers les univers -->
+      <div class="quick-access">
+        <div class="quick-tile" onclick="switchTab('arrivages')">
+          <div class="quick-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7"/></svg></div>
+          <div class="quick-tile-txt"><h4>Arrivages</h4><div class="sub">Les arbres disponibles</div></div>
         </div>
-        <div class="arrival-card-sm" data-category="palmier" onclick="openDetail(2)">
-          <div class="arrival-card-sm-img">
-            <div class="arrival-card-sm-badge">Rare</div>
-            <img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-3.png" alt="" onerror="this.style.display='none'">
-          </div>
-          <div class="arrival-card-sm-body">
-            <h4>Palmier Jubaea</h4>
-            <div class="meta">Il y a 3 jours</div>
-          </div>
+        <div class="quick-tile" onclick="switchTab('galerie')">
+          <div class="quick-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="quick-tile-txt"><h4>Galerie</h4><div class="sub">Nos réalisations</div></div>
         </div>
-        <div class="arrival-card-sm" data-category="olivier millenaire" onclick="openDetail(3)">
-          <div class="arrival-card-sm-img">
-            <div class="arrival-card-sm-badge">Exclusif</div>
-            <img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-5.png" alt="" onerror="this.style.display='none'">
-          </div>
-          <div class="arrival-card-sm-body">
-            <h4>Olivier millénaire</h4>
-            <div class="meta">Il y a 5 jours</div>
-          </div>
+        <div class="quick-tile" onclick="switchTab('conseils')">
+          <div class="quick-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+          <div class="quick-tile-txt"><h4>Conseils</h4><div class="sub">Le guide d'entretien</div></div>
+        </div>
+        <div class="quick-tile" onclick="switchTab('profil')">
+          <div class="quick-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="quick-tile-txt"><h4>Mon espace</h4><div class="sub">Suivi de mes arbres</div></div>
         </div>
       </div>
 
-      <!-- Inspiration grid -->
-      <div class="section-head">
-        <h3>En <em>images</em></h3>
-        <a onclick="switchTab('galerie')">Galerie</a>
+      <!-- Coup de cœur du moment (un seul arbre, mis en scène) -->
+      <div id="homeFeaturedContainer"></div>
+
+      <!-- Nos réalisations (aperçu galerie) -->
+      <div class="editorial-head">
+        <div class="eyebrow">Inspirations</div>
+        <h3>Nos plus belles réalisations</h3>
+        <div class="ornament"></div>
       </div>
-      <div class="gallery-grid-sm" id="homeMosaicGrid">
-        <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-1.png" alt=""></div>
-        <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-2.png" alt=""></div>
-        <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-3.png" alt=""></div>
-        <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-4.png" alt=""></div>
-        <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-5.png" alt=""></div>
-        <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/05/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-Avis-1.jpg" alt=""></div>
+      <div class="home-realisations">
+        <div class="gallery-grid-sm" id="homeMosaicGrid">
+          <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-1.png" alt=""></div>
+          <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-2.png" alt=""></div>
+          <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-3.png" alt=""></div>
+          <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-4.png" alt=""></div>
+          <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-f-5.png" alt=""></div>
+          <div class="gallery-grid-sm-item" onclick="switchTab('galerie')"><img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/05/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-Avis-1.jpg" alt=""></div>
+        </div>
+      </div>
+
+      <!-- Conseil du moment -->
+      <div class="editorial-head">
+        <div class="eyebrow">Prendre soin</div>
+        <h3>Le conseil du moment</h3>
+        <div class="ornament"></div>
+      </div>
+      <div id="homeTipContainer"></div>
+
+      <!-- CTA visite -->
+      <div class="visit-cta">
+        <div class="eyebrow">Nous rendre visite</div>
+        <h3>Venez les rencontrer à Chanas</h3>
+        <p>Rien ne remplace la présence d'un arbre centenaire. Notre pépinière vous accueille pour choisir le vôtre.</p>
+        <button class="btn" onclick="openMap()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Itinéraire
+        </button>
       </div>
     </div>
 
@@ -1579,11 +2598,6 @@ body{
       <div class="header">
         <div class="header-brand">
           <img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-logo.png" alt="Logo">
-        </div>
-        <div class="header-actions">
-          <button class="icon-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          </button>
         </div>
       </div>
 
@@ -1631,12 +2645,6 @@ body{
             </div>
           </div>
           <div class="feed-actions">
-            <button class="feed-action" onclick="toggleLike(this)" data-action="like">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            </button>
-            <button class="feed-action" onclick="toggleSave(this)" data-action="save">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-            </button>
             <button class="feed-action" onclick="openDetail(0)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
             </button>
@@ -1688,12 +2696,6 @@ body{
             </div>
           </div>
           <div class="feed-actions">
-            <button class="feed-action liked" data-action="like">
-              <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            </button>
-            <button class="feed-action" onclick="toggleSave(this)" data-action="save">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-            </button>
             <button class="feed-action" onclick="openDetail(0)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
             </button>
@@ -1744,12 +2746,6 @@ body{
             </div>
           </div>
           <div class="feed-actions">
-            <button class="feed-action" onclick="toggleLike(this)" data-action="like">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            </button>
-            <button class="feed-action saved" data-action="save">
-              <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-            </button>
             <button class="feed-action" onclick="openDetail(0)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
             </button>
@@ -1848,73 +2844,19 @@ body{
         </div>
       </div>
 
-      <div class="page-title fade-up">
-        <div class="eyebrow">Conseils d'entretien</div>
-        <h1>Prenez soin de vos <em>arbres</em></h1>
-        <div class="subtitle">Nos fiches pratiques pour des oliviers et palmiers en pleine santé toute l'année.</div>
+      <div class="tips-hero fade-up">
+        <div class="eyebrow">Le guide du propriétaire</div>
+        <h1>Prendre soin de vos <em>arbres d'exception</em></h1>
+        <p>Le savoir-faire de nos pépiniéristes, transmis fiche par fiche. Des gestes simples pour des oliviers et palmiers en pleine santé, saison après saison.</p>
       </div>
 
-      <div class="tips-list">
-        <div class="tip-card" onclick="openTip(0)">
-          <div class="tip-card-header">
-            <div class="tip-icon water">💧</div>
-            <div class="tip-body">
-              <div class="eyebrow">Arrosage</div>
-              <h4>Quand et comment arroser ?</h4>
-              <p>Fréquence selon la saison, signes de stress hydrique, et erreurs à éviter.</p>
-            </div>
-          </div>
-          <div class="tip-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-        </div>
+      <!-- Fiche du moment (saisonnière) -->
+      <div id="tipFeaturedContainer"></div>
 
-        <div class="tip-card" onclick="openTip(1)">
-          <div class="tip-card-header">
-            <div class="tip-icon winter">❄</div>
-            <div class="tip-body">
-              <div class="eyebrow">Hiver</div>
-              <h4>Protéger ses arbres du froid</h4>
-              <p>Voiles d'hivernage, paillage, et précautions pour les sujets en pot.</p>
-            </div>
-          </div>
-          <div class="tip-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-        </div>
+      <!-- Sections de fiches générées dynamiquement -->
+      <div id="tipsSections"></div>
 
-        <div class="tip-card" onclick="openTip(2)">
-          <div class="tip-card-header">
-            <div class="tip-icon sun">☀</div>
-            <div class="tip-body">
-              <div class="eyebrow">Exposition</div>
-              <h4>Soleil et emplacement</h4>
-              <p>Comment choisir le bon emplacement pour votre olivier ou palmier.</p>
-            </div>
-          </div>
-          <div class="tip-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-        </div>
-
-        <div class="tip-card" onclick="openTip(3)">
-          <div class="tip-card-header">
-            <div class="tip-icon pot">🪴</div>
-            <div class="tip-body">
-              <div class="eyebrow">Rempotage</div>
-              <h4>Quand et comment rempoter</h4>
-              <p>Période idéale, choix du contenant et du substrat adapté.</p>
-            </div>
-          </div>
-          <div class="tip-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-        </div>
-
-        <div class="tip-card" onclick="openTip(4)">
-          <div class="tip-card-header">
-            <div class="tip-icon season">🌿</div>
-            <div class="tip-body">
-              <div class="eyebrow">Saisonnier</div>
-              <h4>Calendrier d'entretien annuel</h4>
-              <p>Mois par mois, les gestes essentiels pour vos arbres.</p>
-            </div>
-          </div>
-          <div class="tip-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-        </div>
-      </div>
+      <div style="height:20px;"></div>
     </div>
 
     <!-- ============= ÉCRAN PROFIL ============= -->
@@ -1923,15 +2865,11 @@ body{
         <div class="header-brand">
           <img src="https://www.unjourunolivier.fr/wp-content/uploads/2022/03/UN-JOUR-UN-OLIVIER-acheter-un-olivier-bordeaux-Herblain-logo.png" alt="Logo">
         </div>
-        <div class="header-actions">
-          <button class="icon-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-          </button>
-        </div>
       </div>
 
       <div class="profile-header fade-up">
-        <div class="profile-avatar" id="profileAvatar">M</div>
+        <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('profilePhotoInput').click()"><span id="avatarInitial">M</span><span class="avatar-cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></span></div>
+        <input type="file" id="profilePhotoInput" accept="image/*" style="display:none" onchange="handleProfilePhotoChange(event)">
         <div class="profile-name" id="profileName">Bienvenue</div>
         <div class="profile-tier" id="profileTier">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg>
@@ -1941,8 +2879,9 @@ body{
 
       <!-- Hero "Mes arbres" pour clients connectés -->
       <div class="my-trees-header" id="myTreesHeader">
-        <div class="eyebrow">Mon espace</div>
+        <div class="eyebrow" id="myTreesEyebrow">Mon espace</div>
         <h2 id="myTreesH2">Ma collection</h2>
+        <div class="welcome-msg" id="myTreesWelcome"></div>
         <div class="stats" id="myTreesStats">
           <span>0 arbres</span>
         </div>
@@ -1961,6 +2900,11 @@ body{
         </div>
         <h4>Vous avez acheté chez nous ?</h4>
         <p>Scannez le QR code remis lors de votre visite pour accéder à votre espace personnalisé et suivre vos arbres.</p>
+        <button class="btn btn-primary" onclick="openScanner()" style="width:auto;padding:0 26px;display:inline-flex;margin-top:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><path d="M3 12h18"/></svg>
+          Scanner ma carte
+        </button>
+        <div onclick="openManualLink()" style="margin-top:14px;font-size:12.5px;color:var(--gold-deep);font-weight:600;cursor:pointer;">J'ai reçu un lien</div>
       </div>
 
       <!-- Contact card -->
@@ -1978,16 +2922,6 @@ body{
       <div class="menu-section">
         <div class="menu-section-title">Mon univers</div>
         <div class="menu-list">
-          <div class="menu-item" onclick="openFavorites()">
-            <div class="menu-item-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-            </div>
-            <div class="menu-item-text">
-              <div class="label">Mes favoris</div>
-              <div class="sub">12 arbres sauvegardés</div>
-            </div>
-            <div class="menu-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-          </div>
           <div class="menu-item" onclick="switchTab('conseils')">
             <div class="menu-item-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
@@ -2077,6 +3011,17 @@ body{
     <div class="menu-section admin-section" style="display:none;">
       <div class="menu-section-title" style="color:var(--gold-deep);">Espace administrateur</div>
       <div class="menu-list">
+        <div class="menu-item" onclick="openLeadsConsole()">
+          <div class="menu-item-icon" style="background:var(--gold-deep);color:#fff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="label">Leads intéressés</div>
+            <div class="sub">Prospects à recontacter</div>
+          </div>
+          <div class="menu-count-badge" id="leadsCountBadge" style="display:none;">0</div>
+          <div class="menu-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
         <div class="menu-item" onclick="openCustomersList()">
           <div class="menu-item-icon" style="background:var(--olive-deep);color:var(--gold-light);">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-3-3.87M4 21v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 7a4 4 0 108 0 4 4 0 00-8 0z"/></svg>
@@ -2094,6 +3039,16 @@ body{
           <div class="menu-item-text">
             <div class="label">Délier mon téléphone</div>
             <div class="sub">Tester en tant que client</div>
+          </div>
+          <div class="menu-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="menu-item" onclick="adminLogout()">
+          <div class="menu-item-icon" style="background:#b13e2e;color:#fff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          </div>
+          <div class="menu-item-text">
+            <div class="label">Quitter le mode admin</div>
+            <div class="sub">Se déconnecter du compte pépinière</div>
           </div>
           <div class="menu-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
         </div>
@@ -2139,6 +3094,21 @@ body{
   </nav>
 
   <!-- ============= SHEET BACKDROP ============= -->
+  <!-- ============= SCANNER QR (caméra) ============= -->
+  <div class="scanner-overlay" id="scannerOverlay">
+    <video id="scanVideo" playsinline muted></video>
+    <canvas id="scanCanvas" style="display:none;"></canvas>
+    <div class="scan-mask"></div>
+    <div class="scan-frame">
+      <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span>
+    </div>
+    <div class="scan-hint">Visez le QR code de votre carte de membre</div>
+    <button class="scan-close" onclick="stopScanner()" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <button class="scan-manual-btn" onclick="openManualLink()">Saisir un lien à la place</button>
+  </div>
+
   <div class="sheet-backdrop" id="backdrop" onclick="closeAllSheets()"></div>
 
   <!-- ============= DETAIL SHEET ============= -->
@@ -2159,25 +3129,15 @@ body{
         <span class="chip" id="detailChip2">Millénaire</span>
         <span class="chip" id="detailChip3">Exclusif</span>
       </div>
-      <h2 class="detail-title" id="detailTitle">Olivier millénaire d'Espagne</h2>
-      <p class="detail-desc" id="detailDesc">Une pièce d'exception d'environ 1000 ans, tronc torturé sculpté par les siècles. Ramure équilibrée et port magistral. Idéale en sujet isolé pour devenir la pièce maîtresse d'un jardin contemporain ou méditerranéen.</p>
-      <div class="detail-specs">
-        <div class="spec-row"><div class="label">Âge estimé</div><div class="value">~1000 ans</div></div>
-        <div class="spec-row"><div class="label">Hauteur</div><div class="value">3,8 m</div></div>
-        <div class="spec-row"><div class="label">Origine</div><div class="value">Andalousie</div></div>
-        <div class="spec-row"><div class="label">Rusticité</div><div class="value">-15 °C</div></div>
-      </div>
+      <h2 class="detail-title" id="detailTitle">Arrivage</h2>
+      <p class="detail-desc" id="detailDesc"></p>
+      <div class="detail-specs" id="detailSpecs"></div>
     </div>
     <div class="sheet-footer">
-      <div class="btn-row">
-        <button class="btn btn-outline" onclick="showToast('Sauvegardé ✓')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-        </button>
-        <button class="btn btn-primary" onclick="markInterested()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          Je suis intéressé
-        </button>
-      </div>
+      <button class="btn btn-primary" onclick="markInterested()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Je suis intéressé
+      </button>
     </div>
   </div>
 
@@ -2218,12 +3178,12 @@ body{
 
       <div class="form-group">
         <label class="form-label">Titre</label>
-        <input type="text" class="form-input" placeholder="Ex. Oliviers millénaires d'exception" value="Oliviers millénaires d'Espagne">
+        <input type="text" class="form-input" id="publishTitle" placeholder="Ex. Oliviers millénaires d'exception">
       </div>
 
       <div class="form-group">
         <label class="form-label">Description courte</label>
-        <textarea class="form-textarea" placeholder="Quelques mots pour décrire ces arbres...">Quatre nouvelles pièces exceptionnelles arrivées cette semaine. Troncs torturés, magnifiques cicatrices du temps.</textarea>
+        <textarea class="form-textarea" id="publishDesc" placeholder="Quelques mots pour décrire ces arbres..."></textarea>
         <div class="form-helper">2-3 phrases suffisent</div>
       </div>
 
@@ -2284,6 +3244,7 @@ body{
         <div class="tip-hero-icon">💧</div>
       </div>
       <h2 class="detail-title" id="tipTitle">Titre</h2>
+      <div class="tip-readtime-header" id="tipReadHeader"></div>
       <div class="tip-content" id="tipContent"></div>
     </div>
     <div class="sheet-footer">
@@ -2430,6 +3391,120 @@ body{
     </div>
   </div>
 
+  <!-- ============= ADMIN LOGIN SHEET ============= -->
+  <div class="sheet" id="adminLoginSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3>Espace <em>administrateur</em></h3>
+      <button class="sheet-close" onclick="closeAllSheets()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="width:56px;height:56px;border-radius:16px;background:var(--cream-warm);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--olive-deep)" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <p style="font-size:13px;color:var(--stone);line-height:1.5;max-width:280px;margin:0 auto;">Connectez-vous avec le compte de la pépinière pour gérer arrivages, clients et galerie.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="adminEmail" placeholder="email@exemple.fr" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input type="password" class="form-input" id="adminPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn btn-primary" id="adminLoginBtn" onclick="adminLogin()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        Se connecter
+      </button>
+    </div>
+  </div>
+
+  <!-- ============= VISIT REQUEST SHEET (prise de RDV) ============= -->
+  <div class="sheet" id="visitRequestSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3>Demander une <em>visite</em></h3>
+      <button class="sheet-close" onclick="closeAllSheets()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <p class="form-helper" style="margin-bottom:18px;">Un expert de la pépinière se déplace pour prendre soin de votre arbre. Indiquez vos préférences, Rachid vous recontacte pour convenir d'un créneau.</p>
+      <div class="form-group">
+        <label class="form-label">Type de visite</label>
+        <div class="rdv-pills" id="rdvTypePills">
+          <div class="rdv-pill active" onclick="selectRdv('rdvTypePills',this,'Entretien')">Entretien</div>
+          <div class="rdv-pill" onclick="selectRdv('rdvTypePills',this,'Diagnostic')">Diagnostic</div>
+          <div class="rdv-pill" onclick="selectRdv('rdvTypePills',this,'Taille')">Taille</div>
+          <div class="rdv-pill" onclick="selectRdv('rdvTypePills',this,'Conseil')">Conseil</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quand ?</label>
+        <div class="rdv-pills" id="rdvPeriodPills">
+          <div class="rdv-pill active" onclick="selectRdv('rdvPeriodPills',this,'Pas urgent')">Pas urgent</div>
+          <div class="rdv-pill" onclick="selectRdv('rdvPeriodPills',this,'Ce mois-ci')">Ce mois-ci</div>
+          <div class="rdv-pill" onclick="selectRdv('rdvPeriodPills',this,'Dès que possible')">Dès que possible</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Précisions (optionnel)</label>
+        <textarea class="form-textarea" id="rdvNote" placeholder="Une question, une préoccupation particulière…"></textarea>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn btn-primary" id="rdvSubmitBtn" onclick="submitVisitRequest()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        Envoyer ma demande
+      </button>
+    </div>
+  </div>
+
+  <!-- ============= WELCOME SHEET (mot de Rachid, 1ère connexion) ============= -->
+  <div class="sheet" id="welcomeSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" id="welcomeBody"></div>
+  </div>
+
+  <!-- ============= TREE DASHBOARD SHEET (VIP — suivi de santé) ============= -->
+  <div class="sheet" id="treeDashSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3>Suivi de mon <em>arbre</em></h3>
+      <button class="sheet-close" onclick="closeAllSheets()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="treeDashBody"></div>
+  </div>
+
+  <!-- ============= LEADS CONSOLE SHEET (Admin) ============= -->
+  <div class="sheet" id="leadsSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3>Leads <em>intéressés</em></h3>
+      <button class="sheet-close" onclick="closeAllSheets()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <div class="leads-filter">
+        <div class="pill active" data-leadfilter="new" onclick="setLeadsFilter('new', this)">Nouveaux</div>
+        <div class="pill" data-leadfilter="all" onclick="setLeadsFilter('all', this)">Tous</div>
+        <div class="pill" data-leadfilter="done" onclick="setLeadsFilter('done', this)">Rappelés</div>
+      </div>
+      <div id="leadsList"></div>
+      <div id="leadsEmpty" style="display:none;text-align:center;padding:40px 16px;color:var(--stone);font-size:13px;">
+        Aucun lead pour le moment.<br>Les prospects apparaîtront ici quand ils cliquent "Je suis intéressé".
+      </div>
+    </div>
+  </div>
+
   <!-- ============= CUSTOMERS LIST SHEET (Admin) ============= -->
   <div class="sheet" id="customersListSheet">
     <div class="sheet-handle"></div>
@@ -2546,8 +3621,17 @@ body{
         <input type="text" class="form-input" id="treeVarietyInput" placeholder="Olivier millénaire d'Espagne">
       </div>
       <div class="form-group">
-        <label class="form-label">Dimensions / âge (libre)</label>
-        <input type="text" class="form-input" id="treeDimsInput" placeholder="Ex. 3,5 m · ~800 ans">
+        <label class="form-label">Hauteur / mensurations</label>
+        <input type="text" class="form-input" id="treeDimsInput" placeholder="Ex. 3,5 m · tronc 180 cm">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Âge estimé</label>
+        <input type="text" class="form-input" id="treeAgeInput" placeholder="Ex. Estimé à 800 ans">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Origine</label>
+        <input type="text" class="form-input" id="treeOriginInput" placeholder="Ex. Andalousie, Espagne">
+        <div class="form-helper">Région d'origine — figurera sur le certificat</div>
       </div>
       <div class="form-group">
         <label class="form-label">Emplacement</label>
@@ -2561,6 +3645,17 @@ body{
             <div class="label">En pot</div>
           </div>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Carnet de l'arbre</label>
+        <div class="form-helper" style="margin-bottom:8px;">Documentez la vie de l'arbre (visites, soins, jalons). Visible par le client.</div>
+        <div id="treeJournalList"></div>
+        <input type="text" class="form-input" id="treeJournalTitle" placeholder="Titre — ex. Visite d'entretien">
+        <textarea class="form-textarea" id="treeJournalNote" placeholder="Note (optionnel)" style="margin-top:8px;min-height:60px;"></textarea>
+        <button class="btn btn-outline" onclick="addTreeJournalEntry()" style="margin-top:8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Ajouter au carnet
+        </button>
       </div>
       <div class="form-group" id="treeDeleteSection" style="display:none;">
         <button class="btn btn-outline" onclick="deleteCurrentTree()" style="color:#b13e2e;border-color:#b13e2e;">
@@ -2638,7 +3733,7 @@ body{
   <!-- ============= TOAST ============= -->
   <div class="toast" id="toast">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-    <span id="toastText">Action réalisée</span>
+    <span id="toastText"></span>
   </div>
 
 </div>
@@ -2658,8 +3753,9 @@ const state = {
 // =============================================
 function switchTab(tabId){
   state.currentTab = tabId;
+  const target = document.getElementById('screen-'+tabId);
   document.querySelectorAll('.screen').forEach(s=>{
-    s.classList.toggle('active', s.id === 'screen-'+tabId);
+    s.classList.toggle('active', s === target);
   });
   document.querySelectorAll('.tab').forEach(t=>{
     t.classList.toggle('active', t.dataset.tab === tabId);
@@ -2667,8 +3763,21 @@ function switchTab(tabId){
   // FAB visibility (only show on arrivages screen in admin mode)
   updateFab();
   // Reset scroll on screen
-  const screen = document.getElementById('screen-'+tabId);
-  if(screen) screen.scrollTop = 0;
+  if(target){
+    target.scrollTop = 0;
+    playReveal(target);
+  }
+}
+
+// Révélation en cascade des sections d'un écran
+function playReveal(screen){
+  if(!screen) return;
+  const kids = Array.from(screen.children).filter(el => !el.classList.contains('header'));
+  kids.forEach((el, i) => {
+    el.style.animation = 'none';
+    void el.offsetWidth; // force reflow pour rejouer
+    el.style.animation = `revealUp .5s var(--ease-out-expo) ${Math.min(i*0.05, 0.32)}s both`;
+  });
 }
 
 function updateFab(){
@@ -2693,7 +3802,8 @@ function setupLongPress(){
     const start = (e)=>{
       if(longPressTimer) clearTimeout(longPressTimer);
       longPressTimer = setTimeout(()=>{
-        toggleAdmin(true);
+        if (typeof openAdminLogin === 'function') openAdminLogin();
+        else toggleAdmin(true);
         if(navigator.vibrate) navigator.vibrate(40);
       }, 1200);
     };
@@ -2711,13 +3821,9 @@ function setupLongPress(){
 
 function toggleAdmin(enable){
   state.isAdmin = enable;
+  document.querySelector('.app').classList.toggle('is-admin', enable);
   document.getElementById('adminBanner').classList.toggle('visible', enable);
   updateFab();
-  if(enable){
-    showToast('Mode admin activé 🔓');
-  } else {
-    showToast('Mode admin désactivé');
-  }
 }
 
 // =============================================
@@ -2725,7 +3831,17 @@ function toggleAdmin(enable){
 // =============================================
 function openSheet(id){
   document.getElementById('backdrop').classList.add('visible');
-  document.getElementById(id).classList.add('visible');
+  const sheet = document.getElementById(id);
+  sheet.classList.add('visible');
+  // Révélation en cascade du contenu du sheet (effet premium à l'ouverture)
+  const body = sheet.querySelector('.sheet-body');
+  if(body){
+    Array.from(body.children).forEach((el, i) => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = `revealUp .45s var(--ease-out-expo) ${(0.1 + i*0.05).toFixed(2)}s both`;
+    });
+  }
 }
 function closeAllSheets(){
   document.getElementById('backdrop').classList.remove('visible');
@@ -2790,57 +3906,342 @@ function openDetail(index){
 function openPublish(){ openSheet('publishSheet'); }
 function openContact(){ openSheet('contactSheet'); }
 function openImage(i){ openDetail(0); }
-function openFavorites(){ showToast('12 favoris'); }
-function openNotifications(){ showToast('Pas de nouvelle notification'); }
-function openMap(){ showToast('Ouverture de la carte...'); }
-function callPhone(){ showToast('Appel en cours...'); }
+function openMap(){
+  window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent("28 Rue de l'Avenir, 38150 Chanas"), '_blank');
+}
+function callPhone(){ window.location.href = 'tel:+33603364824'; }
 
 // =============================================
 // CONSEILS — contenu réel
 // =============================================
+/* ============================================================
+   CONSEILS — Moteur premium (fiches expertes en blocs)
+   blocs: h (titre), p (paragraphe), list (puces),
+          pro (conseil pépiniériste), warn (erreur), key (à retenir)
+   ============================================================ */
 const tipsData = [
   {
-    eyebrow:'Arrosage', icon:'💧',
+    id:'arrosage', cat:'essentiels', eyebrow:'Arrosage', icon:'💧', iconClass:'water',
     bg:'linear-gradient(135deg,#3D5234 0%,#6B7A4E 100%)',
     title:'Quand et comment arroser ?',
-    content:`<strong>En pleine terre</strong><p>Un olivier installé depuis plus d'un an n'a pratiquement pas besoin d'arrosage. Les racines descendent chercher l'humidité en profondeur. La première année, arrosez copieusement une fois par semaine en période sèche.</p><strong>En pot</strong><p>1 fois par semaine d'avril à octobre. En hiver, espacez à 1 fois toutes les 3 semaines. Le substrat doit sécher entre deux arrosages.</p><strong>Signes d'alerte</strong><p>Feuilles qui jaunissent et tombent = trop d'eau. Feuilles qui se recroquevillent = manque d'eau. Toujours préférer un sol qui sèche plutôt que détrempé : l'olivier craint bien plus la noyade que la soif.</p>`
+    excerpt:'Fréquence selon la saison, signes de stress hydrique, et erreurs à éviter.',
+    readTime:3, level:'Essentiel',
+    blocks:[
+      {t:'h',x:'En pleine terre'},
+      {t:'p',x:`Un olivier installé depuis plus d'un an n'a quasiment pas besoin d'arrosage : ses racines descendent chercher l'humidité en profondeur. La première année seulement, arrosez copieusement une fois par semaine en période sèche pour favoriser l'enracinement.`},
+      {t:'h',x:'En pot'},
+      {t:'p',x:`Une fois par semaine d'avril à octobre. En hiver, espacez à une fois toutes les trois semaines. Le substrat doit sécher en surface entre deux arrosages.`},
+      {t:'warn',label:'Erreur fréquente',x:`Trop arroser. L'olivier craint infiniment plus l'excès d'eau que la sécheresse. Un sol détrempé asphyxie les racines et provoque la pourriture.`},
+      {t:'h',x:'Lire les signes'},
+      {t:'list',x:[
+        `Feuilles qui jaunissent et tombent → excès d'eau`,
+        `Feuilles qui se recroquevillent sur elles-mêmes → manque d'eau`,
+        `Feuilles ternes et molles → racines asphyxiées`
+      ]},
+      {t:'pro',label:'Le conseil du pépiniériste',x:`Dans le doute, n'arrosez pas. Un olivier assoiffé se rattrape en un arrosage ; un olivier noyé met des mois à s'en remettre, quand il survit.`}
+    ]
   },
   {
-    eyebrow:'Hiver', icon:'❄',
+    id:'hiver', cat:'saisons', eyebrow:'Hiver', icon:'❄️', iconClass:'winter',
     bg:'linear-gradient(135deg,#6B7A4E 0%,#A3AE8C 100%)',
     title:'Protéger ses arbres du froid',
-    content:`<strong>Rusticité de l'olivier</strong><p>Un olivier installé en pleine terre résiste à -10°C voire -15°C selon la variété. En cas de gel prolongé sous -8°C, protégez le feuillage avec un voile d'hivernage respirant.</p><strong>En pot</strong><p>Plus vulnérable au gel : le système racinaire peut geler dans un pot. Emballez le pot dans du papier bulle ou rentrez-le dans un endroit hors-gel mais lumineux (véranda, garage clair).</p><strong>Paillage</strong><p>5 à 10 cm de paillage au pied (écorces, paille) limitent les chocs thermiques au niveau des racines et conservent l'humidité.</p><strong>Palmiers</strong><p>Variable selon la variété (Trachycarpus -18°C, Jubaea -15°C, Chamaerops -12°C). Protégez le cœur (point de croissance) avec un voile dès que les températures descendent durablement sous -5°C.</p>`
+    excerpt:`Voiles d'hivernage, paillage et précautions pour les sujets en pot.`,
+    readTime:4, level:'Saisonnier',
+    blocks:[
+      {t:'h',x:`Rusticité de l'olivier`},
+      {t:'p',x:`En pleine terre, un olivier établi résiste à -10°C, voire -15°C selon la variété et l'exposition. C'est le gel prolongé et humide, plus que le froid sec ponctuel, qui fait des dégâts.`},
+      {t:'h',x:'Les sujets en pot'},
+      {t:'p',x:`Bien plus vulnérables : dans un pot, la motte entière peut geler. Emballez le contenant dans du papier bulle ou un voile épais, ou rentrez-le dans un local hors-gel mais lumineux (véranda, garage clair). Surtout pas dans le noir complet.`},
+      {t:'h',x:'Paillage'},
+      {t:'p',x:`Un paillage de 5 à 10 cm au pied (écorces, paille, BRF) protège les racines des chocs thermiques et conserve l'humidité.`},
+      {t:'h',x:'Les palmiers'},
+      {t:'p',x:`La rusticité varie fortement : Trachycarpus jusqu'à -18°C, Jubaea -15°C, Chamaerops -12°C. Protégez toujours le cœur (point de croissance) avec un voile dès que le froid s'installe durablement sous -5°C.`},
+      {t:'warn',label:'Erreur fréquente',x:`Utiliser une bâche plastique en contact direct avec le feuillage. Elle emprisonne l'humidité et provoque condensation et pourriture. Toujours un voile d'hivernage respirant.`},
+      {t:'key',label:'À retenir',x:`Un arbre sec résiste bien mieux au gel qu'un arbre gorgé d'eau. Réduisez fortement les arrosages avant les premières gelées.`}
+    ]
   },
   {
-    eyebrow:'Exposition', icon:'☀',
+    id:'exposition', cat:'essentiels', eyebrow:'Exposition', icon:'☀️', iconClass:'sun',
     bg:'linear-gradient(135deg,#B89770 0%,#D9C5A6 100%)',
     title:'Soleil et emplacement',
-    content:`<strong>Plein soleil obligatoire</strong><p>Olivier et palmier ont besoin d'au minimum 6 heures de soleil direct par jour. À l'ombre, ils s'étiolent, le feuillage devient clairsemé et ils ne produisent ni fleurs ni fruits.</p><strong>Sol et drainage</strong><p>Sol drainant impératif. Le pire ennemi est l'eau stagnante. Sur sol lourd ou argileux, plantez sur butte ou mélangez gravier et sable au substrat de plantation.</p><strong>Vent</strong><p>L'olivier tolère le vent modéré qui aère le feuillage. Évitez seulement les vents glacés (mistral, bise) sur les sujets jeunes ou récemment plantés.</p><strong>Espace</strong><p>Pour un olivier centenaire ou millénaire, comptez un rayon de 2 à 3 mètres autour du tronc pour qu'il puisse s'épanouir et révéler tout son port.</p>`
+    excerpt:`Choisir le bon endroit pour révéler tout le potentiel de votre arbre.`,
+    readTime:3, level:'Essentiel',
+    blocks:[
+      {t:'h',x:'Plein soleil, sans compromis'},
+      {t:'p',x:`Olivier et palmier réclament au minimum 6 heures de soleil direct par jour. À l'ombre, le feuillage se clairsème, l'arbre s'étiole et ne fleurit pas.`},
+      {t:'h',x:'Sol et drainage'},
+      {t:'p',x:`Un sol drainant est impératif. Sur terre lourde ou argileuse, plantez sur une légère butte et incorporez gravier et sable grossier au substrat.`},
+      {t:'h',x:'Le vent'},
+      {t:'p',x:`L'olivier tolère bien le vent modéré, qui aère le feuillage et limite les maladies. Abritez seulement les jeunes sujets des vents glacés (mistral, bise).`},
+      {t:'h',x:`L'espace nécessaire`},
+      {t:'p',x:`Pour un sujet centenaire ou millénaire, prévoyez un rayon dégagé de 2 à 3 mètres autour du tronc, afin qu'il déploie son port et devienne la pièce maîtresse du jardin.`},
+      {t:'pro',label:'Le conseil du pépiniériste',x:`Observez votre terrain une journée entière avant de planter. L'emplacement le plus ensoleillé l'été ne l'est pas forcément l'hiver, quand le soleil est bas.`}
+    ]
   },
   {
-    eyebrow:'Rempotage', icon:'🪴',
+    id:'rempotage', cat:'essentiels', eyebrow:'Rempotage', icon:'🪴', iconClass:'pot',
     bg:'linear-gradient(135deg,#8F7152 0%,#B89770 100%)',
     title:'Quand et comment rempoter',
-    content:`<strong>Fréquence</strong><p>Tous les 3 à 4 ans pour un olivier en pot, idéalement en mars-avril avant la reprise de végétation. Sur sujets jeunes, possible tous les 2 ans.</p><strong>Choix du pot</strong><p>20% plus grand que l'ancien (jamais beaucoup plus, sinon trop d'eau retenue). Toujours percé au fond. Privilégiez la terre cuite qui respire mieux que le plastique.</p><strong>Substrat idéal</strong><p>1/3 terreau plantation + 1/3 terre de jardin + 1/3 sable grossier ou perlite. Drainage essentiel : lit de billes d'argile de 3 à 5 cm au fond du pot.</p><strong>Gestes</strong><p>Démêlez délicatement les racines, coupez celles abîmées ou enroulées. Taillez légèrement le feuillage pour rééquilibrer. Arrosez bien après le rempotage, puis attendez 2 semaines avant le prochain arrosage.</p>`
+    excerpt:`Période idéale, choix du contenant et substrat adapté.`,
+    readTime:4, level:'Essentiel',
+    blocks:[
+      {t:'h',x:'Fréquence'},
+      {t:'p',x:`Tous les 3 à 4 ans pour un olivier en pot, idéalement en mars-avril, juste avant la reprise. Sur jeunes sujets en pleine croissance, tous les 2 ans.`},
+      {t:'h',x:'Le bon pot'},
+      {t:'p',x:`20% plus grand que l'ancien, pas davantage : un pot trop vaste retient trop d'eau. Toujours percé au fond. La terre cuite, qui respire, vaut mieux que le plastique.`},
+      {t:'h',x:'Le substrat idéal'},
+      {t:'list',x:[
+        `1/3 terreau de plantation de qualité`,
+        `1/3 terre de jardin`,
+        `1/3 sable grossier ou perlite`,
+        `+ un lit de billes d'argile de 3 à 5 cm au fond`
+      ]},
+      {t:'h',x:'Les gestes'},
+      {t:'p',x:`Démêlez délicatement les racines, coupez celles qui sont abîmées ou enroulées. Taillez légèrement le feuillage pour rééquilibrer l'arbre. Arrosez bien après le rempotage, puis attendez deux semaines avant l'arrosage suivant.`},
+      {t:'warn',label:'Erreur fréquente',x:`Rempoter en plein été ou en pleine floraison. Le stress racinaire combiné à la chaleur peut faire chuter le feuillage.`}
+    ]
   },
   {
-    eyebrow:'Saisonnier', icon:'🌿',
+    id:'calendrier', cat:'saisons', eyebrow:'Calendrier', icon:'🗓️', iconClass:'season',
     bg:'linear-gradient(135deg,#3D5234 0%,#B89770 100%)',
     title:`Calendrier d'entretien annuel`,
-    content:`<strong>Janvier — Février</strong><p>Repos végétatif. Surveillance du gel et des voiles d'hivernage. Aucun arrosage pour les sujets en pleine terre.</p><strong>Mars — Avril</strong><p>Période idéale pour le rempotage et la taille de structure. Apport d'engrais organique (corne broyée, compost). Reprise progressive des arrosages.</p><strong>Mai — Juin</strong><p>Floraison de l'olivier (petites fleurs blanches discrètes). Surveillance des pucerons et cochenilles. Arrosage régulier des sujets en pot.</p><strong>Juillet — Août</strong><p>Pleine croissance. Arrosage soutenu pour les pots (1 à 2 fois par semaine). Sujets en pleine terre : très limité, sauf canicule prolongée.</p><strong>Septembre — Octobre</strong><p>Récolte des olives (selon variété). Réduction progressive des arrosages. Bon moment pour les nouvelles plantations.</p><strong>Novembre — Décembre</strong><p>Mise en place du paillage. Préparation des voiles d'hivernage si besoin. Dernier arrosage léger avant le repos hivernal.</p>`
+    excerpt:`Mois par mois, les gestes essentiels pour vos arbres.`,
+    readTime:4, level:'Saisonnier',
+    blocks:[
+      {t:'h',x:'Janvier — Février'},
+      {t:'p',x:`Repos végétatif. Surveillance du gel et des voiles d'hivernage. Aucun arrosage en pleine terre. Fin février : début de la taille de structure dans les régions douces.`},
+      {t:'h',x:'Mars — Avril'},
+      {t:'p',x:`Période reine pour le rempotage et la taille. Apport d'engrais organique (corne broyée, compost). Reprise progressive des arrosages.`},
+      {t:'h',x:'Mai — Juin'},
+      {t:'p',x:`Floraison de l'olivier (petites fleurs blanches). Surveillez pucerons et cochenilles. Arrosage régulier des sujets en pot.`},
+      {t:'h',x:'Juillet — Août'},
+      {t:'p',x:`Pleine croissance. Arrosage soutenu des pots (1 à 2 fois par semaine). En pleine terre, uniquement en cas de canicule prolongée.`},
+      {t:'h',x:'Septembre — Octobre'},
+      {t:'p',x:`Récolte des olives selon la variété. Réduction des arrosages. Meilleur moment, avec le printemps, pour les nouvelles plantations.`},
+      {t:'h',x:'Novembre — Décembre'},
+      {t:'p',x:`Mise en place du paillage et préparation des voiles. Dernier arrosage léger avant le repos hivernal.`}
+    ]
   },
+  {
+    id:'plantation', cat:'essentiels', eyebrow:'Plantation', icon:'🌱', iconClass:'water',
+    bg:'linear-gradient(135deg,#3D5234 0%,#8F9E6E 100%)',
+    title:'Réussir la plantation',
+    excerpt:`Le geste fondateur : bien planter pour des décennies de sérénité.`,
+    readTime:4, level:'Essentiel',
+    blocks:[
+      {t:'h',x:'La bonne saison'},
+      {t:'p',x:`Plantez au printemps (mars-mai) ou à l'automne (septembre-octobre), hors période de gel et de forte chaleur. L'automne laisse le temps aux racines de s'installer avant l'été suivant.`},
+      {t:'h',x:'Le trou de plantation'},
+      {t:'p',x:`Creusez large et profond : au moins deux à trois fois le volume de la motte. Ameublissez bien le fond pour faciliter la descente des racines.`},
+      {t:'h',x:'Le drainage, encore'},
+      {t:'p',x:`Sur sol lourd, disposez une couche de graviers ou de cailloux au fond du trou. Le collet (jonction tronc/racines) ne doit jamais être enterré ni rester dans une cuvette qui retient l'eau.`},
+      {t:'list',x:[
+        `Positionnez le collet au niveau du sol, jamais en dessous`,
+        `Comblez avec un mélange terre de jardin + terreau + sable`,
+        `Formez une cuvette d'arrosage la première année`,
+        `Tuteurez les sujets hauts ou en situation ventée`
+      ]},
+      {t:'pro',label:'Le conseil du pépiniériste',x:`Arrosez abondamment à la plantation (« arrosage de plombage ») même s'il pleut : c'est ce qui chasse les poches d'air et met la terre au contact des racines.`},
+      {t:'warn',label:'Erreur fréquente',x:`Ajouter de l'engrais directement au contact des racines à la plantation. Cela les brûle. Attendez la reprise, quelques semaines plus tard.`}
+    ]
+  },
+  {
+    id:'taille', cat:'essentiels', eyebrow:'Taille', icon:'✂️', iconClass:'pot',
+    bg:'linear-gradient(135deg,#6B7A4E 0%,#B89770 100%)',
+    title:`L'art de la taille`,
+    excerpt:`Tailler juste pour un port aéré, sain et harmonieux.`,
+    readTime:4, level:'Intermédiaire',
+    blocks:[
+      {t:'h',x:'Quand tailler'},
+      {t:'p',x:`La taille se fait en fin d'hiver / début de printemps (février à avril), hors période de gel, quand l'arbre sort de sa dormance mais avant la floraison.`},
+      {t:'h',x:'Taille de formation'},
+      {t:'p',x:`Sur un jeune arbre, on sculpte la silhouette : on dégage un tronc net et on sélectionne 3 à 5 branches charpentières bien réparties pour ouvrir le centre.`},
+      {t:'h',x:`Taille d'entretien`},
+      {t:'p',x:`Sur un sujet établi, on reste léger : on retire le bois mort, les rejets au pied (gourmands), les branches qui se croisent et celles qui rentrent vers l'intérieur. L'objectif : « qu'une hirondelle puisse traverser la ramure ».`},
+      {t:'list',x:[
+        `Outils propres et désinfectés (alcool) avant de commencer`,
+        `Coupez au-dessus d'un œil tourné vers l'extérieur`,
+        `Ne retirez jamais plus d'un tiers du feuillage la même année`
+      ]},
+      {t:'pro',label:'Le conseil du pépiniériste',x:`Pour un olivier d'ornement centenaire, taillez peu et observez beaucoup. Sur ces sujets, la forme s'accompagne, elle ne se force pas.`},
+      {t:'warn',label:'Erreur fréquente',x:`La taille « en boule » serrée chaque année. Elle densifie le feuillage, empêche l'air de circuler et favorise les maladies.`}
+    ]
+  },
+  {
+    id:'fertilisation', cat:'essentiels', eyebrow:'Fertilisation', icon:'🌾', iconClass:'sun',
+    bg:'linear-gradient(135deg,#B89770 0%,#8F7152 100%)',
+    title:'Nourrir sans excès',
+    excerpt:`Un arbre méditerranéen se contente de peu — mais au bon moment.`,
+    readTime:3, level:'Intermédiaire',
+    blocks:[
+      {t:'h',x:'Quand fertiliser'},
+      {t:'p',x:`Un apport principal au début du printemps (mars), au redémarrage de la végétation. Éventuellement un second, plus léger, en début d'été pour les sujets en pot.`},
+      {t:'h',x:'Quel engrais'},
+      {t:'p',x:`Privilégiez l'organique à libération lente : corne broyée, compost mûr, fumier décomposé, ou un engrais spécial agrumes/oliviers. Évitez les engrais « coup de fouet » riches en azote, qui produisent un feuillage tendre et fragile.`},
+      {t:'h',x:'En pot'},
+      {t:'p',x:`Les nutriments s'épuisent vite dans un volume limité : un apport au printemps et un surfaçage (remplacement des premiers centimètres de terre) chaque année font des merveilles.`},
+      {t:'key',label:'À retenir',x:`Mieux vaut sous-fertiliser que sur-fertiliser. Un olivier carencé se rattrape ; un olivier gavé d'azote devient sensible au froid et aux parasites.`}
+    ]
+  },
+  {
+    id:'maladies', cat:'soins', eyebrow:'Diagnostic', icon:'🔬', iconClass:'winter',
+    bg:'linear-gradient(135deg,#5A6647 0%,#8F7152 100%)',
+    title:'Maladies & parasites',
+    excerpt:`Reconnaître et traiter les principaux ennemis de l'olivier.`,
+    readTime:5, level:'Diagnostic',
+    blocks:[
+      {t:'h',x:'La cochenille'},
+      {t:'p',x:`Petits amas blancs ou bruns sur les rameaux et le revers des feuilles, accompagnés d'un dépôt collant (miellat) puis d'un feutrage noir (fumagine). Traitez à l'huile de colza/paraffine, et nettoyez le feuillage. Favorisez la circulation de l'air par une taille aérée.`},
+      {t:'h',x:`L'œil de paon`},
+      {t:'p',x:`Maladie cryptogamique : taches rondes concentriques (comme des yeux) sur les feuilles, qui jaunissent et tombent. Retirez les feuilles atteintes au sol et traitez à la bouillie bordelaise à l'automne et en sortie d'hiver.`},
+      {t:'h',x:`La mouche de l'olive`},
+      {t:'p',x:`Elle pond dans le fruit, qui se pique et tombe. Surtout problématique pour la production. Pièges chromatiques jaunes englués et ramassage des olives tombées limitent sa propagation.`},
+      {t:'warn',label:'Erreur fréquente',x:`Traiter à l'aveugle « pour prévenir ». La plupart des problèmes de l'olivier viennent d'un excès d'eau ou d'un manque d'air, pas d'un parasite. Diagnostiquez avant de traiter.`},
+      {t:'pro',label:'Le conseil du pépiniériste',x:`Un arbre bien exposé, bien drainé et taillé aéré tombe rarement malade. La meilleure protection n'est pas un traitement : ce sont de bonnes conditions de culture.`},
+      {t:'key',label:'En cas de doute',x:`Photographiez la feuille ou le rameau atteint et envoyez-nous l'image. Nous vous aiderons à identifier le problème et la solution adaptée.`}
+    ]
+  }
 ];
+
+// Index par id pour accès rapide
+const tipsById = {};
+tipsData.forEach((t, i) => { t._index = i; tipsById[t.id] = t; });
+
+// Fiche du moment selon le mois courant
+const FEATURED_BY_MONTH = [
+  {id:'hiver',       hook:`Le froid s'installe : vérifiez voiles et paillage.`},        // Janvier
+  {id:'taille',      hook:`C'est la saison idéale pour tailler avant la reprise.`},       // Février
+  {id:'rempotage',   hook:`Le printemps arrive : pensez au rempotage et au substrat.`},   // Mars
+  {id:'plantation',  hook:`Le moment parfait pour planter et fertiliser.`},               // Avril
+  {id:'maladies',    hook:`Surveillez l'apparition des cochenilles et pucerons.`},        // Mai
+  {id:'maladies',    hook:`Période sensible : gardez un œil sur le feuillage.`},          // Juin
+  {id:'arrosage',    hook:`Chaleur estivale : adaptez vos arrosages avec justesse.`},     // Juillet
+  {id:'arrosage',    hook:`Canicule : arrosez tôt le matin ou en soirée.`},               // Août
+  {id:'plantation',  hook:`L'automne, seconde saison reine pour planter.`},               // Septembre
+  {id:'plantation',  hook:`Plantez maintenant pour un bel enracinement avant l'été.`},    // Octobre
+  {id:'hiver',       hook:`Préparez vos arbres au repos hivernal.`},                      // Novembre
+  {id:'hiver',       hook:`Protégez les sujets en pot des premières gelées.`}             // Décembre
+];
+
+function renderTipsScreen(){
+  const month = new Date().getMonth();
+  const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  // --- Fiche du moment ---
+  const feat = FEATURED_BY_MONTH[month];
+  const featTip = tipsById[feat.id] || tipsData[0];
+  const featContainer = document.getElementById('tipFeaturedContainer');
+  if (featContainer) {
+    featContainer.innerHTML = `
+      <div class="tip-featured fade-up" onclick="openTip(${featTip._index})">
+        <div class="tip-featured-banner" style="background:${featTip.bg};">
+          <span class="tip-featured-tag">✦ Conseil du moment</span>
+          <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:54px;opacity:.5;z-index:1;">${featTip.icon}</div>
+        </div>
+        <div class="tip-featured-body">
+          <div class="season">${monthNames[month]} · ${featTip.eyebrow}</div>
+          <h3>${escapeTip(featTip.title)}</h3>
+          <p>${escapeTip(feat.hook)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // --- Sections ---
+  const sections = [
+    {key:'essentiels', label:'Les essentiels'},
+    {key:'saisons',    label:'Au fil des saisons'},
+    {key:'soins',      label:'Diagnostic & soins'}
+  ];
+  const container = document.getElementById('tipsSections');
+  if (!container) return;
+  container.innerHTML = sections.map(sec => {
+    const cards = tipsData
+      .filter(t => t.cat === sec.key)
+      .map(t => `
+        <div class="tip-card" onclick="openTip(${t._index})">
+          <div class="tip-card-header">
+            <div class="tip-icon ${t.iconClass}">${t.icon}</div>
+            <div class="tip-body">
+              <div class="eyebrow">${escapeTip(t.eyebrow)}</div>
+              <h4>${escapeTip(t.title)}</h4>
+              <p>${escapeTip(t.excerpt)}</p>
+              <div class="tip-meta-row">
+                <span class="tip-readtime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> ${t.readTime} min</span>
+                <span class="tip-level">${escapeTip(t.level)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="tip-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      `).join('');
+    return `
+      <div class="tips-section">
+        <div class="tips-section-title"><span>${sec.label}</span><div class="line"></div></div>
+        <div class="tips-list">${cards}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeTip(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Conseil du moment sur l'accueil (réutilise la logique saisonnière)
+function renderHomeTip(){
+  const container = document.getElementById('homeTipContainer');
+  if(!container) return;
+  const month = new Date().getMonth();
+  const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const feat = FEATURED_BY_MONTH[month];
+  const tip = tipsById[feat.id] || tipsData[0];
+  container.innerHTML = `
+    <div class="tip-featured" style="margin:0 24px 8px;" onclick="openTip(${tip._index})">
+      <div class="tip-featured-banner" style="background:${tip.bg};">
+        <span class="tip-featured-tag">✦ Conseil du moment</span>
+        <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:50px;opacity:.5;z-index:1;">${tip.icon}</div>
+      </div>
+      <div class="tip-featured-body">
+        <div class="season">${monthNames[month]} · ${escapeTip(tip.eyebrow)}</div>
+        <h3>${escapeTip(tip.title)}</h3>
+        <p>${escapeTip(feat.hook)}</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderTipBlocks(blocks){
+  return (blocks || []).map(b => {
+    switch(b.t){
+      case 'h':    return `<h4 class="tip-h">${escapeTip(b.x)}</h4>`;
+      case 'p':    return `<p>${escapeTip(b.x)}</p>`;
+      case 'list': return `<ul class="tip-list">${(b.x||[]).map(i=>`<li>${escapeTip(i)}</li>`).join('')}</ul>`;
+      case 'pro':  return `<div class="tip-callout pro"><span class="tip-callout-label">${escapeTip(b.label||'Le conseil du pépiniériste')}</span>${escapeTip(b.x)}</div>`;
+      case 'warn': return `<div class="tip-callout warn"><span class="tip-callout-label">${escapeTip(b.label||'Erreur fréquente')}</span>${escapeTip(b.x)}</div>`;
+      case 'key':  return `<div class="tip-callout key"><span class="tip-callout-label">${escapeTip(b.label||'À retenir')}</span>${escapeTip(b.x)}</div>`;
+      default:     return '';
+    }
+  }).join('');
+}
 
 function openTip(index){
   const tip = tipsData[index] || tipsData[0];
   document.getElementById('tipSheetEyebrow').textContent = tip.eyebrow;
   document.getElementById('tipTitle').textContent = tip.title;
-  document.getElementById('tipContent').innerHTML = tip.content;
+  document.getElementById('tipContent').innerHTML = renderTipBlocks(tip.blocks);
+  const head = document.getElementById('tipReadHeader');
+  if (head) {
+    head.innerHTML = `
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> ${tip.readTime} min de lecture</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg> ${escapeTip(tip.level)}</span>
+    `;
+  }
   const hero = document.getElementById('tipHero');
   hero.style.background = tip.bg;
   hero.querySelector('.tip-hero-icon').textContent = tip.icon;
   openSheet('tipSheet');
-  // reset scroll
   setTimeout(()=>{
     document.querySelector('#tipSheet .sheet-body').scrollTop = 0;
   }, 50);
@@ -2905,6 +4306,7 @@ function sendContact(){
 // =============================================
 let toastTimer = null;
 function showToast(message){
+  if(!message) return; // pas de toast fantôme sans message
   const toast = document.getElementById('toast');
   document.getElementById('toastText').textContent = message;
   toast.classList.add('visible');
@@ -2989,6 +4391,9 @@ function setupContactTypes(){
 function initSplash(){
   setTimeout(()=>{
     document.getElementById('splash').classList.add('hidden');
+    // Révélation orchestrée de l'écran d'accueil une fois le splash parti
+    const home = document.getElementById('screen-accueil');
+    if(home && home.classList.contains('active')) playReveal(home);
   }, 2200);
 }
 
@@ -2996,12 +4401,17 @@ function initSplash(){
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', ()=>{
+  // Toast toujours caché au démarrage (sécurité anti-fantôme)
+  const t = document.getElementById('toast');
+  if(t) t.classList.remove('visible');
   initSplash();
   setupLongPress();
   setupCarousels();
   setupHeaderScroll();
   setupPills();
   setupContactTypes();
+  renderTipsScreen();
+  renderHomeTip();
 });
 
 // Prevent overscroll bounce
@@ -3041,8 +4451,6 @@ const CLOUDINARY = {
   uploadPreset: "olivier_unsigned"
 };
 
-const ADMIN_PIN = "1804"; // ⚠️ À changer
-
 /* ============================================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -3051,10 +4459,12 @@ import {
   query, orderBy, onSnapshot, serverTimestamp, increment, updateDoc, deleteDoc, limit
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import {
-  getAuth, signInAnonymously, onAuthStateChanged
+  getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 const FIREBASE_OK = !firebaseConfig.apiKey.startsWith("REMPLACE");
+// Compte administrateur (à créer dans Firebase Authentication)
+const ADMIN_EMAIL = "admin@unjourunolivier.fr";
 
 let db, auth, currentUid = null;
 let publishPhotos = []; // {blob, previewUrl} OU {url, previewUrl} pour photos existantes
@@ -3068,29 +4478,34 @@ if (FIREBASE_OK) {
   db = getFirestore(app);
   auth = getAuth(app);
 
-  signInAnonymously(auth).catch(err => {
-    console.error("Auth error", err);
-    window.showToast("Connexion impossible");
-  });
+  // Afficher les skeletons tout de suite (remplace les démos en attendant Firestore)
+  showFeedSkeletons();
+  showGallerySkeletons();
 
+  let _appInitialized = false;
   onAuthStateChanged(auth, async (user) => {
-    if (!user) return;
+    if (!user) {
+      // Personne connecté → session visiteur anonyme
+      try { await signInAnonymously(auth); }
+      catch (err) { console.error("Auth error", err); window.showToast("Connexion impossible"); }
+      return; // se redéclenchera avec le visiteur anonyme
+    }
     currentUid = user.uid;
-    console.log("[Firebase] UID:", user.uid);
+    const isAdmin = !user.isAnonymous && (user.email || '').toLowerCase() === ADMIN_EMAIL;
+    console.log("[Firebase] UID:", user.uid, isAdmin ? "(ADMIN)" : "(visiteur)");
 
-    // Si admin déjà validé sur cet appareil, restaurer
-    if (localStorage.getItem('isAdmin') === 'true') {
-      _activateAdmin();
+    // Abonnements initialisés une seule fois
+    if (!_appInitialized) {
+      _appInitialized = true;
+      detectCustomerFromUrl();
+      subscribeToFeed();
+      subscribeToHero();
+      subscribeToGallery();
+      subscribeToMyProfile();
     }
 
-    // Détecter ?c= et lier le téléphone au client
-    detectCustomerFromUrl();
-
-    // S'abonner au feed + hero + galerie + profil client en temps réel
-    subscribeToFeed();
-    subscribeToHero();
-    subscribeToGallery();
-    subscribeToMyProfile();
+    // Appliquer l'état admin selon le compte connecté
+    applyAdminState(isAdmin);
   });
 } else {
   console.warn("[Firebase] Non configuré — Mode démo");
@@ -3106,35 +4521,210 @@ if (FIREBASE_OK) {
 }
 
 /* ============================================================
-   ADMIN — PIN flow au long-press du logo
+   ADMIN — Connexion par compte (Firebase Auth email/mot de passe)
    ============================================================ */
-const originalToggleAdmin = window.toggleAdmin;
-window.toggleAdmin = function(enable) {
-  if (enable && localStorage.getItem('isAdmin') !== 'true') {
-    const pin = prompt("Code admin (4 chiffres) :");
-    if (pin === null) return; // Cancel
-    if (pin !== ADMIN_PIN) {
-      window.showToast("Code incorrect");
-      return;
-    }
-    _registerAsAdmin();
-  } else if (!enable) {
-    localStorage.removeItem('isAdmin');
+function applyAdminState(isAdmin){
+  toggleAdmin(isAdmin);            // UI : classe is-admin, bannière, FAB
+  if (isAdmin) subscribeToLeads(); // badge leads
+}
+
+window.openAdminLogin = function(){
+  // Si déjà admin, proposer plutôt la déconnexion
+  if (document.querySelector('.app')?.classList.contains('is-admin')) {
+    window.switchTab('profil');
+    window.showToast("Vous êtes déjà en mode admin");
+    return;
   }
-  // Toggle la classe is-admin sur le container app (révèle les boutons ⋯)
-  document.querySelector('.app').classList.toggle('is-admin', enable);
-  originalToggleAdmin(enable);
+  const e = document.getElementById('adminEmail'); if (e) e.value = '';
+  const p = document.getElementById('adminPassword'); if (p) p.value = '';
+  openSheet('adminLoginSheet');
 };
 
-async function _registerAsAdmin() {
-  localStorage.setItem('isAdmin', 'true');
-  // (la création du doc admins n'est plus nécessaire avec les nouvelles règles)
+window.adminLogin = async function(){
+  const email = (document.getElementById('adminEmail')?.value || '').trim();
+  const pwd = document.getElementById('adminPassword')?.value || '';
+  if (!email || !pwd) { window.showToast("Email et mot de passe requis"); return; }
+  const btn = document.getElementById('adminLoginBtn');
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.innerHTML = 'Connexion...'; }
+  try {
+    await signInWithEmailAndPassword(auth, email, pwd);
+    // onAuthStateChanged se charge d'activer le mode admin
+    window.closeAllSheets();
+    window.showToast("Mode admin activé 🔓");
+  } catch (err) {
+    console.warn("[Admin] échec connexion", err.code);
+    window.showToast("Identifiants incorrects");
+  } finally {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = orig; }
+  }
+};
+
+window.adminLogout = async function(){
+  if (!confirm("Quitter le mode admin ?")) return;
+  try {
+    await signOut(auth); // onAuthStateChanged repassera en visiteur anonyme
+    window.showToast("Mode admin désactivé");
+    window.closeAllSheets();
+  } catch (err) { console.error(err); }
+};
+
+/* ============================================================
+   PHOTO DE PROFIL (locale à l'appareil + Cloudinary)
+   ============================================================ */
+function profilePhotoKey(){
+  const cid = localStorage.getItem('customerId');
+  return cid ? `pp_${cid}` : 'pp_local';
 }
 
-function _activateAdmin() {
-  document.querySelector('.app').classList.add('is-admin');
-  originalToggleAdmin(true);
+function applyProfilePhoto(){
+  const av = document.getElementById('profileAvatar');
+  if (!av) return;
+  const url = localStorage.getItem(profilePhotoKey());
+  if (url) {
+    av.style.backgroundImage = `url(${url})`;
+    av.classList.add('has-photo');
+  } else {
+    av.style.backgroundImage = '';
+    av.classList.remove('has-photo');
+  }
 }
+window.applyProfilePhoto = applyProfilePhoto;
+
+window.handleProfilePhotoChange = async function(e){
+  const file = e.target.files?.[0];
+  if (!file) return;
+  window.showToast("Envoi de la photo…");
+  try {
+    const blob = await compressImage(file, 600, 0.85);
+    const formData = new FormData();
+    formData.append('file', blob);
+    formData.append('upload_preset', CLOUDINARY.uploadPreset);
+    formData.append('folder', 'profiles');
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY.cloudName}/image/upload`, { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('upload');
+    const data = await res.json();
+    localStorage.setItem(profilePhotoKey(), data.secure_url);
+    applyProfilePhoto();
+    window.showToast("Photo mise à jour ✓");
+  } catch (err) {
+    console.error(err);
+    window.showToast("Échec de l'envoi");
+  } finally {
+    e.target.value = '';
+  }
+};
+
+/* ============================================================
+   CERTIFICAT PDF (jsPDF) — document à conserver
+   ============================================================ */
+window.downloadCertificate = function(){
+  const tree = window._dashTree;
+  if (!tree) { window.showToast("Aucun arbre sélectionné"); return; }
+  const ns = window.jspdf;
+  if (!ns || !ns.jsPDF) { window.showToast("Module PDF indisponible"); return; }
+  try {
+    const { jsPDF } = ns;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const W = doc.internal.pageSize.getWidth();
+    const H = doc.internal.pageSize.getHeight();
+    // Fond crème + bordures dorées
+    doc.setFillColor(253, 250, 242); doc.rect(0, 0, W, H, 'F');
+    doc.setDrawColor(193, 154, 107);
+    doc.setLineWidth(1.2); doc.rect(12, 12, W - 24, H - 24);
+    doc.setLineWidth(0.4); doc.rect(16, 16, W - 32, H - 32);
+    // En-tête
+    doc.setTextColor(74, 80, 50);
+    doc.setFont('times', 'italic'); doc.setFontSize(14);
+    doc.text('Un Jour Un Olivier', W / 2, 34, { align: 'center' });
+    doc.setTextColor(45, 50, 30);
+    doc.setFont('times', 'normal'); doc.setFontSize(28);
+    doc.text("Certificat d'authenticité", W / 2, 48, { align: 'center' });
+    doc.setDrawColor(193, 154, 107); doc.setLineWidth(0.5);
+    doc.line(W / 2 - 28, 54, W / 2 + 28, 54);
+    doc.setFont('times', 'italic'); doc.setFontSize(11); doc.setTextColor(120, 110, 90);
+    doc.text("Atteste de l'authenticité et de l'origine de l'arbre désigné ci-dessous.", W / 2, 64, { align: 'center' });
+    // Caractéristiques
+    const rows = [['Variété', tree.variety || '—']];
+    if (tree.age) rows.push(['Âge estimé', tree.age]);
+    if (tree.origin) rows.push(['Origine', tree.origin]);
+    if (tree.dims) rows.push(['Mensurations', tree.dims]);
+    rows.push(['Emplacement', tree.location === 'pot' ? 'En pot' : 'Pleine terre']);
+    if (tree.name) rows.unshift(['Baptisé', tree.name]);
+    let y = 82;
+    rows.forEach(([k, v]) => {
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(150, 130, 95); doc.setFontSize(10);
+      doc.text(k.toUpperCase(), W / 2 - 8, y, { align: 'right' });
+      doc.setFont('times', 'normal'); doc.setTextColor(45, 50, 30); doc.setFontSize(14);
+      doc.text(String(v), W / 2 + 8, y, { align: 'left' });
+      y += 11;
+    });
+    // Pied
+    const acq = fmtTreeDate(tree.createdAt) || 'récemment';
+    doc.setDrawColor(193, 154, 107); doc.setLineWidth(0.4);
+    doc.line(42, H - 44, W - 42, H - 44);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(150, 130, 95);
+    doc.text('N° DE CERTIFICAT', 46, H - 34);
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(74, 80, 50); doc.setFontSize(12);
+    doc.text(String(tree.certId || '—'), 46, H - 27);
+    doc.setFont('times', 'italic'); doc.setTextColor(45, 50, 30); doc.setFontSize(12);
+    doc.text(`Acquis le ${acq}`, W - 46, H - 34, { align: 'right' });
+    doc.text('Un Jour Un Olivier — Chanas', W - 46, H - 27, { align: 'right' });
+    doc.save(`certificat-${tree.certId || 'arbre'}.pdf`);
+    window.showToast("Certificat téléchargé ✓");
+  } catch (err) {
+    console.error(err);
+    window.showToast("Erreur lors de la génération");
+  }
+};
+
+/* ============================================================
+   PRISE DE RENDEZ-VOUS — demande de visite d'entretien
+   ============================================================ */
+let _rdvType = 'Entretien', _rdvPeriod = 'Pas urgent';
+
+window.openVisitRequest = function(){
+  _rdvType = 'Entretien'; _rdvPeriod = 'Pas urgent';
+  const note = document.getElementById('rdvNote'); if (note) note.value = '';
+  document.querySelectorAll('#rdvTypePills .rdv-pill').forEach((p, i) => p.classList.toggle('active', i === 0));
+  document.querySelectorAll('#rdvPeriodPills .rdv-pill').forEach((p, i) => p.classList.toggle('active', i === 0));
+  openSheet('visitRequestSheet');
+};
+
+window.selectRdv = function(group, el, value){
+  document.getElementById(group).querySelectorAll('.rdv-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  if (group === 'rdvTypePills') _rdvType = value; else _rdvPeriod = value;
+};
+
+window.submitVisitRequest = async function(){
+  if (!currentCustomerData?.id) { window.showToast("Profil non connecté"); return; }
+  const note = (document.getElementById('rdvNote')?.value || '').trim();
+  const tree = window._dashTree;
+  const treeName = tree ? (tree.name || tree.variety || 'mon arbre') : 'mon arbre';
+  const btn = document.getElementById('rdvSubmitBtn');
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.innerHTML = 'Envoi…'; }
+  try {
+    await addDoc(collection(db, 'interests'), {
+      kind: 'rdv',
+      name: currentCustomerData.name || 'Client',
+      phone: currentCustomerData.phone || '',
+      city: currentCustomerData.city || '',
+      arrivalTitle: `🗓️ Visite ${_rdvType} — ${treeName} (${_rdvPeriod})`,
+      note,
+      handled: false,
+      createdAt: serverTimestamp()
+    });
+    window.closeAllSheets();
+    window.showToast("Demande envoyée ✓ Rachid vous recontacte");
+  } catch (err) {
+    console.error(err);
+    window.showToast("Échec de l'envoi");
+  } finally {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = orig; }
+  }
+};
 
 /* ============================================================
    COMPRESSION — canvas, 1400px max, JPEG 85%
@@ -3260,6 +4850,14 @@ window.openPublish = function() {
     publishPhotos = [];
     renderPublishPhotos();
   }
+  // Vider les champs texte
+  const titleEl = document.getElementById('publishTitle');
+  const descEl = document.getElementById('publishDesc');
+  if (titleEl) titleEl.value = '';
+  if (descEl) descEl.value = '';
+  // Réinitialiser la catégorie sur la première option
+  const cats = document.querySelectorAll('#publishSheet .contact-type-option');
+  cats.forEach((c, i) => c.classList.toggle('active', i === 0));
   // Restaurer titre + bouton par défaut
   const headerH3 = document.querySelector('#publishSheet .sheet-header h3');
   if (headerH3) headerH3.innerHTML = `Nouvel <em>arrivage</em>`;
@@ -3284,8 +4882,8 @@ window.publishPost = async function() {
     return;
   }
 
-  const titleEl = document.querySelector('#publishSheet input[type="text"]');
-  const descEl = document.querySelector('#publishSheet textarea');
+  const titleEl = document.getElementById('publishTitle');
+  const descEl = document.getElementById('publishDesc');
   const title = (titleEl?.value || '').trim();
   const desc = (descEl?.value || '').trim();
 
@@ -3435,7 +5033,9 @@ function subscribeToFeed() {
     const feed = document.getElementById('feedList');
     if (!feed) return;
     if (snapshot.empty) {
-      console.log("[Firebase] Pas d'arrivages — affichage des données démo");
+      console.log("[Firebase] Aucun arrivage");
+      renderFeedEmpty();
+      renderHomeFeatured([]);
       return;
     }
     feed.innerHTML = '';
@@ -3447,45 +5047,71 @@ function subscribeToFeed() {
     });
     setupCarouselsLive();
     // Auto-sync la strip d'accueil avec les 4 derniers arrivages
-    renderHomeArrivalsStrip(allArrivals.slice(0, 4));
+    renderHomeFeatured(allArrivals.slice(0, 4));
     console.log(`[Firebase] ${snapshot.size} arrivages chargés`);
   }, (err) => {
     console.error("Feed error", err);
   });
 }
 
-function renderHomeArrivalsStrip(arrivals) {
-  const strip = document.getElementById('arrivalsStripHome');
-  if (!strip || arrivals.length === 0) return;
-  strip.innerHTML = '';
-  arrivals.forEach(data => {
-    const photo = (data.photos || [])[0] || '';
-    const badge = (data.category || '').toLowerCase().includes('millenaire')
-      ? 'Exclusif'
-      : (data.category || '').toLowerCase().includes('palmier')
-        ? 'Rare'
-        : 'Nouveau';
-    const timeAgo = formatTimeAgo(data.createdAt?.toDate?.() || new Date());
+function showFeedSkeletons(){
+  const feed = document.getElementById('feedList');
+  if (!feed) return;
+  feed.innerHTML = Array(3).fill(0).map(() => `
+    <div class="skel-card">
+      <div class="skel skel-img"></div>
+      <div class="skel-pad">
+        <div class="skel skel-line title"></div>
+        <div class="skel skel-line mid"></div>
+        <div class="skel skel-line short"></div>
+      </div>
+    </div>
+  `).join('');
+}
 
-    const card = document.createElement('div');
-    card.className = 'arrival-card-sm';
-    card.dataset.category = data.category || '';
-    card.addEventListener('click', () => {
-      // Aller à l'onglet arrivages où l'arrivage est visible
-      window.switchTab('arrivages');
-    });
-    card.innerHTML = `
-      <div class="arrival-card-sm-img">
-        <div class="arrival-card-sm-badge">${escapeHtml(badge)}</div>
-        ${photo ? `<img src="${escapeHtml(photo)}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+function renderFeedEmpty(){
+  const feed = document.getElementById('feedList');
+  if (!feed) return;
+  const adminBtn = (document.querySelector('.app')?.classList.contains('is-admin'))
+    ? `<button class="btn btn-primary" onclick="fabAction()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Publier un arrivage</button>`
+    : '';
+  feed.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-state-icon">🌿</div>
+      <h3>Bientôt de nouvelles pièces</h3>
+      <p>Nos prochains arbres d'exception arrivent. Revenez très vite pour les découvrir en avant-première.</p>
+      ${adminBtn}
+    </div>
+  `;
+}
+
+function renderHomeFeatured(arrivals) {
+  const container = document.getElementById('homeFeaturedContainer');
+  if (!container) return;
+  if (!arrivals || arrivals.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  const data = arrivals[0]; // le plus récent = coup de cœur
+  const photo = (data.photos || [])[0] || '';
+  const cat = (data.category || '').split(/[\s,]+/).filter(Boolean)
+    .map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' · ');
+  const desc = (data.description || '').slice(0, 110) + ((data.description||'').length > 110 ? '…' : '');
+
+  container.innerHTML = `
+    <div class="home-featured" onclick="openArrivalDetail('${data.id}')">
+      ${photo ? `<img src="${escapeHtml(photo)}" alt="" loading="lazy">` : ''}
+      <div class="home-featured-tag">✦ Coup de cœur</div>
+      <div class="home-featured-content">
+        ${cat ? `<div class="cat">${escapeHtml(cat)}</div>` : ''}
+        <h3>${escapeHtml(data.title || 'Pièce d\'exception')}</h3>
+        ${desc ? `<p>${escapeHtml(desc)}</p>` : ''}
+        <span class="discover">Découvrir cette pièce
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
       </div>
-      <div class="arrival-card-sm-body">
-        <h4>${escapeHtml(data.title || 'Arrivage')}</h4>
-        <div class="meta">${escapeHtml(timeAgo)}</div>
-      </div>
-    `;
-    strip.appendChild(card);
-  });
+    </div>
+  `;
 }
 
 function buildFeedItem(data) {
@@ -3530,16 +5156,10 @@ function buildFeedItem(data) {
       <div class="feed-carousel-dots">${dots}</div>
     </div>
     <div class="feed-actions">
-      <button class="feed-action" onclick="toggleLike(this)" data-action="like">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      </button>
-      <button class="feed-action" onclick="toggleSave(this)" data-action="save">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-      </button>
       <button class="feed-action" onclick="openArrivalDetail('${data.id}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
       </button>
-      <button class="feed-action share" onclick="showToast('Lien copié ✓')">
+      <button class="feed-action share" onclick="shareArrival('${data.id}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
       </button>
     </div>
@@ -3599,6 +5219,14 @@ window.markInterested = async function(arrivalId) {
     return;
   }
 
+  // Déduplication : un même appareil ne peut s'inscrire qu'une fois par arrivage
+  const interestedKey = `interested_${arrivalId}`;
+  if (localStorage.getItem(interestedKey)) {
+    window.showToast("Vous avez déjà manifesté votre intérêt ✓");
+    setTimeout(window.closeAllSheets, 800);
+    return;
+  }
+
   // Coordonnées en localStorage (1 seule fois)
   let userName = localStorage.getItem('userName');
   let userPhone = localStorage.getItem('userPhone');
@@ -3613,8 +5241,10 @@ window.markInterested = async function(arrivalId) {
   }
 
   try {
+    const arrivalData = arrivalCache.get(arrivalId);
     await addDoc(collection(db, 'interests'), {
       arrivalId,
+      arrivalTitle: arrivalData?.title || 'Arrivage',
       userUid: currentUid,
       userName,
       userPhone,
@@ -3624,6 +5254,8 @@ window.markInterested = async function(arrivalId) {
     await updateDoc(doc(db, 'arrivals', arrivalId), {
       interestedCount: increment(1)
     });
+    // Marquer cet arrivage comme déjà demandé sur cet appareil
+    localStorage.setItem(interestedKey, '1');
     window.showToast("On vous recontacte ✓");
     if (navigator.vibrate) navigator.vibrate(20);
     setTimeout(window.closeAllSheets, 800);
@@ -3633,9 +5265,91 @@ window.markInterested = async function(arrivalId) {
   }
 };
 
+window.shareArrival = async function(id) {
+  const data = arrivalCache.get(id);
+  const title = data?.title || 'Un Jour Un Olivier';
+  const url = window.location.origin + window.location.pathname;
+  const text = `${title} — découvrez cet arrivage chez Un Jour Un Olivier 🌿`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error(err);
+    }
+  } else if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      window.showToast("Lien copié ✓");
+    } catch { window.showToast("Partage indisponible"); }
+  }
+};
+
 window.openArrivalDetail = function(id) {
   window.currentDetailId = id;
-  window.openDetail(0); // TODO: charger depuis Firestore
+
+  // Mocks de démo : garder l'ancien comportement (données statiques)
+  if (!id || id.startsWith('mock-')) {
+    const mockIndex = id ? parseInt(id.replace('mock-', '')) - 1 : 0;
+    window.openDetail(isNaN(mockIndex) ? 0 : mockIndex);
+    return;
+  }
+
+  const data = arrivalCache.get(id);
+  if (!data) {
+    window.showToast("Arrivage introuvable");
+    return;
+  }
+
+  // Photos
+  const photos = (data.photos || []).filter(Boolean);
+  const track = document.getElementById('detailCarouselTrack');
+  if (track) {
+    track.innerHTML = photos.length
+      ? photos.map(p => `<div><img src="${escapeHtml(p)}" alt=""></div>`).join('')
+      : `<div style="aspect-ratio:4/3;background:var(--cream-warm);"></div>`;
+  }
+
+  // Titre + description
+  const titleEl = document.getElementById('detailTitle');
+  const descEl = document.getElementById('detailDesc');
+  if (titleEl) titleEl.textContent = data.title || 'Arrivage';
+  if (descEl) descEl.textContent = data.description || '';
+
+  // Chips depuis la catégorie
+  const tags = (data.category || '').split(/[\s,]+/).filter(Boolean);
+  for (let i = 0; i < 3; i++) {
+    const chip = document.getElementById('detailChip' + (i + 1));
+    if (!chip) continue;
+    if (tags[i]) {
+      chip.textContent = tags[i].charAt(0).toUpperCase() + tags[i].slice(1);
+      chip.style.display = '';
+    } else {
+      chip.style.display = 'none';
+    }
+  }
+
+  // Specs dynamiques basées sur les vraies infos
+  const specs = document.getElementById('detailSpecs');
+  if (specs) {
+    const arrivalDate = data.createdAt?.toDate?.() || new Date();
+    const dateStr = arrivalDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const count = data.interestedCount || 0;
+    const rows = [
+      ['Catégorie', tags.map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' · ') || '—'],
+      ['Arrivé le', dateStr],
+    ];
+    if (count > 0) rows.push(['Intéressés', `${count} personne${count > 1 ? 's' : ''}`]);
+    specs.innerHTML = rows.map(([label, value]) =>
+      `<div class="spec-row"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(value)}</div></div>`
+    ).join('');
+  }
+
+  // Incrémenter le compteur de vues (silencieux, best-effort)
+  if (FIREBASE_OK) {
+    updateDoc(doc(db, 'arrivals', id), { viewCount: increment(1) }).catch(() => {});
+  }
+
+  openSheet('detailSheet');
 };
 
 /* ============================================================
@@ -3668,8 +5382,8 @@ window.editCurrentArrival = function() {
   setTimeout(() => {
     openSheet('publishSheet');
     setTimeout(() => {
-      const titleEl = document.querySelector('#publishSheet input[type="text"]');
-      const descEl = document.querySelector('#publishSheet textarea');
+      const titleEl = document.getElementById('publishTitle');
+      const descEl = document.getElementById('publishDesc');
       const headerH3 = document.querySelector('#publishSheet .sheet-header h3');
       if (titleEl) titleEl.value = data.title || '';
       if (descEl) descEl.value = data.description || '';
@@ -3788,8 +5502,8 @@ window.openEditHero = function() {
 };
 
 window.openHeroDetail = function() {
-  // Tap sur le hero (mode public) → ouvre le détail du dernier arrivage si dispo
-  window.openDetail(0);
+  // Le hero est une bannière d'accueil → diriger vers le feed des arrivages
+  window.switchTab('arrivages');
 };
 
 window.saveHero = async function() {
@@ -3860,8 +5574,10 @@ window.saveHero = async function() {
   }
 };
 
+let _heroSubscribed = false;
 function subscribeToHero() {
-  if (!FIREBASE_OK) return;
+  if (!FIREBASE_OK || _heroSubscribed) return;
+  _heroSubscribed = true;
   onSnapshot(doc(db, 'settings', 'hero'), (snap) => {
     if (!snap.exists()) return;
     const data = snap.data();
@@ -4073,8 +5789,10 @@ async function deleteGalleryItem(id) {
   }
 }
 
+let _gallerySubscribed = false;
 function subscribeToGallery() {
-  if (!FIREBASE_OK) return;
+  if (!FIREBASE_OK || _gallerySubscribed) return;
+  _gallerySubscribed = true;
   const q = query(
     collection(db, 'gallery'),
     orderBy('createdAt', 'desc'),
@@ -4082,7 +5800,8 @@ function subscribeToGallery() {
   );
   onSnapshot(q, (snapshot) => {
     if (snapshot.empty) {
-      console.log("[Gallery] Vide — affichage des démos");
+      console.log("[Gallery] Vide");
+      renderGalleryEmpty();
       return;
     }
     galleryCache.clear();
@@ -4098,9 +5817,35 @@ function subscribeToGallery() {
   }, console.error);
 }
 
+function showGallerySkeletons(){
+  const grid = document.getElementById('galleryMosaic');
+  if (!grid) return;
+  grid.style.display = '';
+  grid.innerHTML = Array(6).fill(0).map(() => `<div class="skel skel-gallery"></div>`).join('');
+}
+
+function renderGalleryEmpty(){
+  const grid = document.getElementById('galleryMosaic');
+  if (!grid) return;
+  const adminHint = (document.querySelector('.app')?.classList.contains('is-admin'))
+    ? `<button class="btn btn-primary" onclick="openAddGalleryItem()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Ajouter une photo</button>`
+    : '';
+  // Le grid est en CSS grid : on neutralise pour centrer l'empty state
+  grid.style.display = 'block';
+  grid.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-state-icon">📷</div>
+      <h3>La galerie se dévoile bientôt</h3>
+      <p>Nos plus belles réalisations et nos arbres d'exception seront présentés ici très prochainement.</p>
+      ${adminHint}
+    </div>
+  `;
+}
+
 function renderFullGallery(items) {
   const grid = document.getElementById('galleryMosaic');
   if (!grid) return;
+  grid.style.display = '';
   grid.innerHTML = '';
   items.forEach(data => {
     const el = document.createElement('div');
@@ -4140,10 +5885,13 @@ let editingCustomerId = null;
 let viewingCustomerId = null; // client actuellement vu en détail (admin)
 let editingTreeId = null;
 let treePhotoData = null;
+let treeJournal = [];
 let currentCustomerData = null; // pour le client connecté
+let myTreesData = []; // arbres du client connecté (source stable, jamais écrasée)
 let unsubscribeCustomers = null;
 let unsubscribeCustomerTrees = null;
 let unsubscribeMyTrees = null;
+let unsubscribeCustomer = null;
 
 /* ============================================================
    DÉTECTION QR (URL ?c=...) au démarrage
@@ -4160,6 +5908,88 @@ function detectCustomerFromUrl() {
   }
 }
 
+/* ============================================================
+   SCANNER QR intégré — connexion client dans l'app installée
+   ============================================================ */
+let _scanStream = null, _scanRAF = null;
+
+window.openScanner = async function(){
+  const overlay = document.getElementById('scannerOverlay');
+  const video = document.getElementById('scanVideo');
+  if (!navigator.mediaDevices?.getUserMedia) { window.showToast("Caméra indisponible"); window.openManualLink(); return; }
+  overlay.classList.add('visible');
+  try {
+    _scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = _scanStream;
+    await video.play();
+    _scanRAF = requestAnimationFrame(scanLoop);
+  } catch (err) {
+    console.warn("[Scan] caméra refusée", err);
+    overlay.classList.remove('visible');
+    window.showToast("Accès caméra refusé");
+    window.openManualLink();
+  }
+};
+
+function scanLoop(){
+  if (!_scanStream) return;
+  const video = document.getElementById('scanVideo');
+  const canvas = document.getElementById('scanCanvas');
+  if (video && video.readyState === video.HAVE_ENOUGH_DATA && window.jsQR) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    try {
+      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = window.jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+      if (code && code.data) { handleScanResult(code.data); return; }
+    } catch (e) {}
+  }
+  _scanRAF = requestAnimationFrame(scanLoop);
+}
+
+window.stopScanner = function(){
+  if (_scanRAF) { cancelAnimationFrame(_scanRAF); _scanRAF = null; }
+  if (_scanStream) { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
+  const overlay = document.getElementById('scannerOverlay');
+  if (overlay) overlay.classList.remove('visible');
+};
+
+function extractCustomerId(text){
+  if (!text) return null;
+  const m = text.match(/[?&]c=([^&\s]+)/);
+  if (m) return decodeURIComponent(m[1]);
+  const t = text.trim();
+  if (/^[A-Za-z0-9_-]{6,40}$/.test(t)) return t;
+  return null;
+}
+
+function handleScanResult(text){
+  stopScanner();
+  const id = extractCustomerId(text);
+  if (!id) { window.showToast("QR code non reconnu"); return; }
+  window.connectCustomerById(id);
+}
+
+window.connectCustomerById = function(id){
+  if (!id) return;
+  if (navigator.vibrate) navigator.vibrate(50);
+  localStorage.setItem('customerId', id);
+  window.showToast("Bienvenue dans votre espace 🌿");
+  if (typeof subscribeToMyProfile === 'function') subscribeToMyProfile();
+  if (typeof switchTab === 'function') switchTab('profil');
+};
+
+window.openManualLink = function(){
+  stopScanner();
+  const val = prompt("Collez le lien de votre carte (ou votre code client) :");
+  if (!val) return;
+  const id = extractCustomerId(val.trim());
+  if (!id) { window.showToast("Lien non reconnu"); return; }
+  window.connectCustomerById(id);
+};
+
 function getStoredCustomerId() {
   return localStorage.getItem('customerId');
 }
@@ -4169,6 +5999,7 @@ window.logoutCustomerSession = function() {
   localStorage.removeItem('customerId');
   if (unsubscribeMyTrees) unsubscribeMyTrees();
   currentCustomerData = null;
+  myTreesData = [];
   weatherChecked = false;
   const stack = document.getElementById('weatherStack');
   if (stack) stack.innerHTML = '';
@@ -4186,17 +6017,25 @@ function subscribeToMyProfile() {
     return;
   }
 
-  // Charger le customer
-  onSnapshot(doc(db, 'customers', customerId), (snap) => {
+  console.log("[Customer] Connexion au profil:", customerId);
+
+  // Charger le customer (désabonnement préalable pour éviter les doublons)
+  if (unsubscribeCustomer) unsubscribeCustomer();
+  unsubscribeCustomer = onSnapshot(doc(db, 'customers', customerId), (snap) => {
     if (!snap.exists()) {
       console.warn("[Customer] Profil introuvable, déliaison");
       localStorage.removeItem('customerId');
       currentCustomerData = null;
+      myTreesData = [];
       renderMyTreesView();
       return;
     }
     currentCustomerData = { id: snap.id, ...snap.data() };
+    currentCustomerData.trees = myTreesData; // conserver les arbres déjà chargés
+    console.log("[Customer] Profil chargé:", currentCustomerData.name, "— ville:", currentCustomerData.city || "(AUCUNE)");
     renderMyTreesView();
+    checkWeatherForCustomer();
+    maybeShowWelcome();
   }, console.error);
 
   // Charger ses arbres en live
@@ -4204,13 +6043,43 @@ function subscribeToMyProfile() {
   unsubscribeMyTrees = onSnapshot(
     query(collection(db, 'customers', customerId, 'trees'), orderBy('createdAt', 'desc')),
     (snapshot) => {
-      const trees = [];
-      snapshot.forEach(d => trees.push({ id: d.id, ...d.data() }));
-      if (currentCustomerData) currentCustomerData.trees = trees;
+      myTreesData = [];
+      snapshot.forEach(d => myTreesData.push({ id: d.id, ...d.data() }));
+      if (currentCustomerData) currentCustomerData.trees = myTreesData;
+      console.log("[Customer]", myTreesData.length, "arbre(s) chargé(s)");
       renderMyTreesView();
+      checkWeatherForCustomer();
     },
     console.error
   );
+}
+
+function maybeShowWelcome(){
+  if (!currentCustomerData?.id) return;
+  const key = `welcomed_${currentCustomerData.id}`;
+  if (localStorage.getItem(key)) return;
+  const body = document.getElementById('welcomeBody');
+  if (!body) return;
+  const firstName = (currentCustomerData.name || '').split(' ')[0] || '';
+  const hello = firstName ? `Cher ${escapeHtml(firstName)},` : 'Cher client,';
+  body.innerHTML = `
+    <div class="welcome-card">
+      <div class="crest">UJ</div>
+      <div class="eyebrow">Un Jour Un Olivier</div>
+      <h2>Bienvenue dans la maison</h2>
+      <div class="letter">
+        <p>${hello}</p>
+        <p>C'est un honneur de vous compter parmi les propriétaires d'un de nos arbres d'exception. Chacun d'eux a traversé les siècles ; il fait désormais partie de votre histoire.</p>
+        <p>Dans cet espace, vous suivrez sa santé au fil des saisons. Et je reste personnellement à votre disposition pour veiller à son épanouissement.</p>
+      </div>
+      <div class="sig">Rachid<span>Votre pépiniériste</span></div>
+      <button class="btn btn-primary" onclick="closeAllSheets()">
+        Découvrir mon espace
+      </button>
+    </div>
+  `;
+  localStorage.setItem(key, '1');
+  setTimeout(() => openSheet('welcomeSheet'), 700);
 }
 
 function renderMyTreesView() {
@@ -4230,27 +6099,48 @@ function renderMyTreesView() {
 
     const firstName = (currentCustomerData.name || '').split(' ')[0] || 'Bienvenue';
     if (profileName) profileName.textContent = firstName;
-    if (profileAvatar) profileAvatar.textContent = firstName[0]?.toUpperCase() || 'M';
+    const initEl = document.getElementById('avatarInitial');
+    if (initEl) initEl.textContent = firstName[0]?.toUpperCase() || 'M';
+    applyProfilePhoto();
     if (profileTier) {
       profileTier.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg>Membre du club`;
     }
     if (logoutItem) logoutItem.style.display = '';
 
     const trees = currentCustomerData.trees || [];
+
+    // Accueil personnalisé selon l'heure
+    const hour = new Date().getHours();
+    const greeting = (hour >= 5 && hour < 18) ? 'Bonjour' : 'Bonsoir';
+    const eyebrow = document.getElementById('myTreesEyebrow');
+    const welcome = document.getElementById('myTreesWelcome');
+    if (eyebrow) eyebrow.textContent = 'Votre espace privé';
     const h2 = document.getElementById('myTreesH2');
+    if (h2) h2.textContent = `${greeting}, ${firstName}`;
+    if (welcome) {
+      welcome.textContent = trees.length === 0
+        ? `Toute l'équipe de la pépinière est honorée de vous compter parmi ses clients privilégiés.`
+        : trees.length === 1
+          ? `Heureux de vous retrouver. Nous veillons sur votre arbre jour après jour.`
+          : `Heureux de vous retrouver. Nous veillons sur vos ${trees.length} arbres jour après jour.`;
+    }
+
     const stats = document.getElementById('myTreesStats');
-    if (h2) h2.textContent = trees.length === 0 ? 'Votre collection commence' : 'Ma collection';
     if (stats) {
       stats.innerHTML = trees.length === 0
-        ? `<span>Aucun arbre pour le moment</span>`
-        : `<span>${trees.length} arbre${trees.length>1?'s':''}</span><span class="dot"></span><span>${currentCustomerData.city || 'France'}</span>`;
+        ? `<span>Votre collection vous attend</span>`
+        : `<span>${trees.length} arbre${trees.length>1?'s':''} d'exception</span><span class="dot"></span><span>${escapeHtml(currentCustomerData.city || 'France')}</span>`;
     }
 
     if (list) {
       list.innerHTML = trees.length === 0
-        ? `<div style="text-align:center;padding:24px;color:var(--stone);font-size:13px;">La pépinière ajoutera vos arbres ici lors de votre achat.</div>`
+        ? `<div class="empty-state" style="padding:40px 24px;">
+             <div class="empty-state-icon">🌳</div>
+             <h3>Votre collection arrive</h3>
+             <p>Dès votre premier achat, vous retrouverez ici tous vos arbres avec un suivi personnalisé.</p>
+           </div>`
         : trees.map(tree => `
-          <div class="tree-card" onclick="showToast('Détail arbre bientôt')">
+          <div class="tree-card" onclick="openTreeDashboard('${tree.id}')">
             <div class="tree-photo">
               ${tree.photo ? `<img src="${escapeHtml(tree.photo)}" alt="">` : ''}
             </div>
@@ -4271,7 +6161,9 @@ function renderMyTreesView() {
     list?.classList.remove('visible');
     prompt?.classList.add('visible');
     if (profileName) profileName.textContent = 'Bienvenue';
-    if (profileAvatar) profileAvatar.textContent = '🌿';
+    const initEl2 = document.getElementById('avatarInitial');
+    if (initEl2) initEl2.textContent = '🌿';
+    applyProfilePhoto();
     if (profileTier) {
       profileTier.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg>Visiteur`;
     }
@@ -4403,11 +6295,17 @@ window.saveCustomer = async function() {
 window.deleteCurrentCustomer = async function() {
   if (!editingCustomerId) return;
   if (!confirm("Supprimer ce client et tous ses arbres ?")) return;
+  const btn = document.querySelector('#customerFormSheet .btn-outline');
+  if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
   try {
-    // Note : on ne supprime pas la sous-collection trees automatiquement.
-    // Pour V1 c'est OK, on les ignore ; pour V2 on ferait une Cloud Function.
+    // 1. Supprimer d'abord tous les arbres de la sous-collection (sinon orphelins)
+    const treesSnap = await getDocs(collection(db, 'customers', editingCustomerId, 'trees'));
+    const deletions = [];
+    treesSnap.forEach(t => deletions.push(deleteDoc(doc(db, 'customers', editingCustomerId, 'trees', t.id))));
+    await Promise.all(deletions);
+    // 2. Puis supprimer le client lui-même
     await deleteDoc(doc(db, 'customers', editingCustomerId));
-    window.showToast("Client supprimé ✓");
+    window.showToast(`Client supprimé ✓${deletions.length ? ` (${deletions.length} arbre${deletions.length>1?'s':''})` : ''}`);
     editingCustomerId = null;
     viewingCustomerId = null;
     setTimeout(() => {
@@ -4416,7 +6314,9 @@ window.deleteCurrentCustomer = async function() {
     }, 400);
   } catch (err) {
     console.error(err);
-    window.showToast("Erreur");
+    window.showToast("Erreur de suppression");
+  } finally {
+    if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
   }
 };
 
@@ -4512,6 +6412,41 @@ function setupTreeLocationSelector() {
   });
 }
 
+function renderTreeJournalEdit(){
+  const list = document.getElementById('treeJournalList');
+  if (!list) return;
+  list.innerHTML = treeJournal.map((e, i) => `
+    <div class="tj-edit-item">
+      <div class="c">
+        <div class="t">${escapeHtml(e.title || '')}</div>
+        ${e.note ? `<div class="n">${escapeHtml(e.note)}</div>` : ''}
+        <div class="d">${escapeHtml(e.date || '')}</div>
+      </div>
+      <button class="rm" onclick="removeTreeJournalEntry(${i})" aria-label="Supprimer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+window.addTreeJournalEntry = function(){
+  const titleEl = document.getElementById('treeJournalTitle');
+  const noteEl = document.getElementById('treeJournalNote');
+  const title = (titleEl?.value || '').trim();
+  const note = (noteEl?.value || '').trim();
+  if (!title) { window.showToast("Donnez un titre à l'entrée"); return; }
+  const date = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  treeJournal.push({ date, title, note });
+  if (titleEl) titleEl.value = '';
+  if (noteEl) noteEl.value = '';
+  renderTreeJournalEdit();
+  window.showToast("Entrée ajoutée — pensez à enregistrer");
+};
+
+window.removeTreeJournalEntry = function(i){
+  treeJournal.splice(i, 1);
+  renderTreeJournalEdit();
+};
+
 window.openTreeForm = async function(treeId) {
   if (!viewingCustomerId) return;
   editingTreeId = treeId || null;
@@ -4526,6 +6461,14 @@ window.openTreeForm = async function(treeId) {
   document.getElementById('treeNameInput').value = data?.name || '';
   document.getElementById('treeVarietyInput').value = data?.variety || '';
   document.getElementById('treeDimsInput').value = data?.dims || '';
+  document.getElementById('treeAgeInput').value = data?.age || '';
+  document.getElementById('treeOriginInput').value = data?.origin || '';
+
+  // Carnet
+  treeJournal = (data?.journal || []).slice();
+  renderTreeJournalEdit();
+  const jt = document.getElementById('treeJournalTitle'); if (jt) jt.value = '';
+  const jn = document.getElementById('treeJournalNote'); if (jn) jn.value = '';
 
   // Photo
   treePhotoData = data?.photo ? { url: data.photo, previewUrl: data.photo } : null;
@@ -4551,6 +6494,8 @@ window.saveTree = async function() {
   const name = document.getElementById('treeNameInput').value.trim();
   const variety = document.getElementById('treeVarietyInput').value.trim();
   const dims = document.getElementById('treeDimsInput').value.trim();
+  const age = document.getElementById('treeAgeInput').value.trim();
+  const origin = document.getElementById('treeOriginInput').value.trim();
   const location = document.querySelector('#treeLocationGrid .contact-type-option.active')?.dataset.loc || 'ground';
   if (!variety) {
     window.showToast("Variété requise");
@@ -4579,12 +6524,13 @@ window.saveTree = async function() {
       photoUrl = data.secure_url;
     }
 
-    const payload = { name, variety, dims, location, photo: photoUrl };
+    const payload = { name, variety, dims, age, origin, location, photo: photoUrl, journal: treeJournal };
     if (editingTreeId) {
       payload.updatedAt = serverTimestamp();
       await updateDoc(doc(db, 'customers', viewingCustomerId, 'trees', editingTreeId), payload);
     } else {
       payload.createdAt = serverTimestamp();
+      payload.certId = `UJUO-${new Date().getFullYear()}-${Math.random().toString(16).slice(2,6).toUpperCase()}`;
       await addDoc(collection(db, 'customers', viewingCustomerId, 'trees'), payload);
     }
 
@@ -4667,30 +6613,185 @@ window.shareQrUrl = async function() {
 };
 
 /* ============================================================
+   LEADS — Console des prospects intéressés
+   ============================================================ */
+const leadsMap = new Map();
+let leadsFilter = 'new';
+let unsubscribeLeads = null;
+
+function subscribeToLeads() {
+  if (!FIREBASE_OK) return;
+  if (unsubscribeLeads) return; // déjà abonné
+  unsubscribeLeads = onSnapshot(
+    query(collection(db, 'interests'), orderBy('createdAt', 'desc'), limit(100)),
+    (snapshot) => {
+      leadsMap.clear();
+      snapshot.forEach(d => leadsMap.set(d.id, { id: d.id, ...d.data() }));
+      updateLeadsBadge();
+      renderLeads();
+    },
+    (err) => console.error("[Leads]", err)
+  );
+}
+
+function updateLeadsBadge() {
+  const badge = document.getElementById('leadsCountBadge');
+  if (!badge) return;
+  const newCount = Array.from(leadsMap.values()).filter(l => l.status !== 'done').length;
+  if (newCount > 0) {
+    badge.textContent = newCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+window.openLeadsConsole = function() {
+  subscribeToLeads();
+  renderLeads();
+  openSheet('leadsSheet');
+};
+
+window.setLeadsFilter = function(filter, el) {
+  leadsFilter = filter;
+  document.querySelectorAll('#leadsSheet .leads-filter .pill').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderLeads();
+};
+
+function renderLeads() {
+  const list = document.getElementById('leadsList');
+  const empty = document.getElementById('leadsEmpty');
+  if (!list) return;
+
+  let leads = Array.from(leadsMap.values());
+  if (leadsFilter === 'new') leads = leads.filter(l => l.status !== 'done');
+  else if (leadsFilter === 'done') leads = leads.filter(l => l.status === 'done');
+
+  if (leads.length === 0) {
+    list.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  list.innerHTML = leads.map(lead => {
+    const isDone = lead.status === 'done';
+    const initial = (lead.userName || '?')[0].toUpperCase();
+    const date = lead.createdAt?.toDate?.() ? formatTimeAgo(lead.createdAt.toDate()) : '';
+    const phone = lead.userPhone || '';
+    const isPhone = /^[\d\s+().-]+$/.test(phone);
+
+    return `
+      <div class="lead-card ${isDone ? 'done-status' : 'is-new'}">
+        <div class="lead-card-top">
+          <div class="lead-avatar">${escapeHtml(initial)}</div>
+          <div class="lead-info">
+            <div class="lead-name">
+              ${escapeHtml(lead.userName || 'Anonyme')}
+              ${isDone ? '<span class="lead-badge-done">Rappelé</span>' : '<span class="lead-badge-new">Nouveau</span>'}
+            </div>
+            <div class="lead-phone">${escapeHtml(phone)}</div>
+          </div>
+        </div>
+        <div class="lead-meta">
+          Intéressé par <span class="arbre">${escapeHtml(lead.arrivalTitle || 'un arrivage')}</span><br>
+          ${escapeHtml(date)}
+        </div>
+        <div class="lead-actions">
+          ${isPhone ? `<a href="tel:${escapeHtml(phone.replace(/\s/g,''))}" class="lead-btn call">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Appeler
+          </a>` : `<a href="mailto:${escapeHtml(phone)}" class="lead-btn call">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 5L2 7"/></svg>
+            Email
+          </a>`}
+          ${!isDone ? `<button class="lead-btn done" onclick="markLeadCalled('${lead.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            Rappelé
+          </button>` : `<button class="lead-btn done" onclick="markLeadNew('${lead.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9 9 0 00-9 9z"/><path d="M12 7v5l3 3"/></svg>
+            Rouvrir
+          </button>`}
+          <button class="lead-btn del" onclick="deleteLead('${lead.id}')" aria-label="Supprimer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.markLeadCalled = async function(id) {
+  try {
+    await updateDoc(doc(db, 'interests', id), { status: 'done', calledAt: serverTimestamp() });
+    window.showToast("Marqué comme rappelé ✓");
+    if (navigator.vibrate) navigator.vibrate(20);
+  } catch (err) {
+    console.error(err);
+    window.showToast("Erreur");
+  }
+};
+
+window.markLeadNew = async function(id) {
+  try {
+    await updateDoc(doc(db, 'interests', id), { status: 'new' });
+    window.showToast("Lead rouvert");
+  } catch (err) {
+    console.error(err);
+    window.showToast("Erreur");
+  }
+};
+
+window.deleteLead = async function(id) {
+  if (!confirm("Supprimer ce lead ?")) return;
+  try {
+    await deleteDoc(doc(db, 'interests', id));
+    window.showToast("Lead supprimé ✓");
+  } catch (err) {
+    console.error(err);
+    window.showToast("Erreur");
+  }
+};
+
+/* ============================================================
    MÉTÉO INTELLIGENTE — Open-Meteo (gratuit, sans clé)
    ============================================================ */
 let weatherChecked = false;
 
 async function checkWeatherForCustomer() {
   if (weatherChecked) return;
-  if (!currentCustomerData || !currentCustomerData.city) return;
+  if (!currentCustomerData) {
+    console.log("[Météo] En attente du profil client...");
+    return;
+  }
+  if (!currentCustomerData.city || !currentCustomerData.city.trim()) {
+    console.warn("[Météo] ⚠️ Aucune ville renseignée pour ce client. La météo ne peut pas s'afficher. → Ajoute une ville via Admin > Gérer les clients > Modifier.");
+    return;
+  }
   const trees = currentCustomerData.trees || [];
-  if (trees.length === 0) return;
+  if (trees.length === 0) {
+    console.log("[Météo] En attente des arbres (la météo s'affiche dès qu'au moins 1 arbre est ajouté)...");
+    return;
+  }
 
   weatherChecked = true;
+  console.log(`[Météo] 🌦️ Analyse en cours pour "${currentCustomerData.city}" avec ${trees.length} arbre(s)`);
 
   try {
     // 1. Geocoding : convertir le nom de la ville en lat/lon
     const geoRes = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(currentCustomerData.city)}&count=1&language=fr&format=json`
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(currentCustomerData.city.trim())}&count=1&language=fr&format=json`
     );
     if (!geoRes.ok) throw new Error('Geocoding failed');
     const geo = await geoRes.json();
     if (!geo.results || geo.results.length === 0) {
-      console.warn("[Météo] Ville introuvable :", currentCustomerData.city);
+      console.warn(`[Météo] ⚠️ Ville introuvable : "${currentCustomerData.city}". Vérifie l'orthographe (ex. "Lyon" et non "lyon 7e").`);
+      weatherChecked = false; // permettre un nouvel essai si la ville est corrigée
       return;
     }
     const { latitude, longitude, name } = geo.results[0];
+    console.log(`[Météo] 📍 Ville trouvée : ${name} (${latitude}, ${longitude})`);
 
     // 2. Forecast 5 jours
     const fcUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
@@ -4702,6 +6803,7 @@ async function checkWeatherForCustomer() {
 
     // 3. Analyse contextuelle
     const alerts = analyzeWeatherForTrees(fc.daily, trees, name);
+    console.log(`[Météo] ✓ ${alerts.length} bannière(s) générée(s)`);
 
     // 4. Rendu
     renderWeatherBanners(alerts);
@@ -4712,6 +6814,7 @@ async function checkWeatherForCustomer() {
 
   } catch (err) {
     console.warn("[Météo] Erreur :", err);
+    weatherChecked = false; // permettre un nouvel essai
   }
 }
 
@@ -4829,19 +6932,516 @@ function renderWeatherBanners(alerts) {
   const stack = document.getElementById('weatherStack');
   if (!stack) return;
   stack.innerHTML = '';
+  const firstName = (currentCustomerData?.name || '').split(' ')[0] || '';
   alerts.forEach(alert => {
     const el = document.createElement('div');
     el.className = `weather-banner ${alert.type}`;
+    const msg = (firstName && alert.message)
+      ? `${firstName}, ${alert.message.charAt(0).toLowerCase()}${alert.message.slice(1)}`
+      : alert.message;
     el.innerHTML = `
       <div class="weather-banner-icon">${alert.icon}</div>
       <div class="weather-banner-body">
         <div class="weather-banner-meta">${escapeHtml(alert.eyebrow || '')}</div>
         <div class="weather-banner-title">${escapeHtml(alert.title)}</div>
-        <div class="weather-banner-msg">${escapeHtml(alert.message)}</div>
+        <div class="weather-banner-msg">${escapeHtml(msg)}</div>
       </div>
     `;
     stack.appendChild(el);
   });
+}
+
+/* ============================================================
+   DASHBOARD ARBRE VIP — suivi de santé (météo + sol Open-Meteo)
+   ============================================================ */
+window.openTreeDashboard = function(treeId) {
+  const tree = myTreesData.find(t => t.id === treeId);
+  if (!tree) { window.showToast("Arbre introuvable"); return; }
+
+  const body = document.getElementById('treeDashBody');
+  // En-tête + état de chargement
+  body.innerHTML = `
+    <div class="tree-dash-hero">
+      ${tree.photo ? `<img src="${escapeHtml(tree.photo)}" alt="">` : ''}
+      <div class="tree-dash-hero-content">
+        <div class="variety">${escapeHtml(tree.variety || '')}</div>
+        <h2>${escapeHtml(tree.name || tree.variety || 'Mon arbre')}</h2>
+      </div>
+    </div>
+    <div class="dash-loading">
+      <div class="skel"></div>
+      <div class="skel l"></div>
+      <div class="skel l" style="width:40%"></div>
+    </div>
+  `;
+  openSheet('treeDashSheet');
+
+  const city = currentCustomerData?.city;
+  if (!city) {
+    body.querySelector('.dash-loading').outerHTML = `
+      <div class="dash-reco" style="background:var(--cream-warm);border-color:var(--border);color:var(--stone);">
+        <span class="label">Suivi indisponible</span>
+        Aucune ville n'est renseignée sur votre profil. Contactez la pépinière pour activer le suivi de santé.
+      </div>`;
+    return;
+  }
+
+  fetchTreeEnvData(city)
+    .then(env => {
+      const health = computeHealthIndex(env, tree);
+      renderTreeDashboard(tree, env, health);
+    })
+    .catch(err => {
+      console.warn("[Dashboard]", err);
+      const load = body.querySelector('.dash-loading');
+      if (load) load.outerHTML = `
+        <div class="dash-reco" style="background:var(--cream-warm);border-color:var(--border);color:var(--stone);">
+          <span class="label">Données momentanément indisponibles</span>
+          Impossible de récupérer les conditions locales pour le moment. Réessayez plus tard.
+        </div>`;
+    });
+};
+
+async function fetchTreeEnvData(city) {
+  // 1. Geocoding
+  const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city.trim())}&count=1&language=fr&format=json`);
+  if (!geoRes.ok) throw new Error('geocoding');
+  const geo = await geoRes.json();
+  if (!geo.results || !geo.results.length) throw new Error('ville introuvable');
+  const { latitude, longitude, name } = geo.results[0];
+
+  // 2. Forecast avec données de sol (+ 7 jours passés pour l'historique)
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}`
+    + `&current=temperature_2m,relative_humidity_2m`
+    + `&hourly=soil_moisture_3_to_9cm,soil_moisture_9_to_27cm,soil_temperature_6cm`
+    + `&daily=et0_fao_evapotranspiration,temperature_2m_max,temperature_2m_min,precipitation_sum`
+    + `&past_days=7&timezone=Europe%2FParis&forecast_days=2`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('forecast');
+  const d = await res.json();
+
+  // Index horaire le plus proche de maintenant
+  let idx = 0;
+  if (d.hourly && d.hourly.time) {
+    const now = Date.now();
+    let best = Infinity;
+    d.hourly.time.forEach((t, i) => {
+      const diff = Math.abs(new Date(t).getTime() - now);
+      if (diff < best) { best = diff; idx = i; }
+    });
+  }
+  // Index du jour courant dans le tableau daily (après 7 jours passés)
+  const todayStr = new Date().toISOString().slice(0, 10);
+  let todayIdx = d.daily?.time?.indexOf(todayStr);
+  if (todayIdx == null || todayIdx < 0) todayIdx = 7;
+
+  // Données quotidiennes brutes (pour l'historique de santé)
+  const dailyRaw = [];
+  if (d.daily?.time) {
+    d.daily.time.forEach((day, i) => {
+      let soil = null;
+      if (d.hourly?.time) {
+        const hi = d.hourly.time.indexOf(day + 'T12:00');
+        if (hi >= 0) soil = d.hourly.soil_moisture_3_to_9cm?.[hi];
+      }
+      dailyRaw.push({
+        date: day,
+        soil,
+        tempMax: d.daily.temperature_2m_max?.[i],
+        tempMin: d.daily.temperature_2m_min?.[i]
+      });
+    });
+  }
+
+  return {
+    cityName: name,
+    temp: d.current?.temperature_2m,
+    humidity: d.current?.relative_humidity_2m,
+    soilShallow: d.hourly?.soil_moisture_3_to_9cm?.[idx],
+    soilDeep: d.hourly?.soil_moisture_9_to_27cm?.[idx],
+    soilTemp: d.hourly?.soil_temperature_6cm?.[idx],
+    et0: d.daily?.et0_fao_evapotranspiration?.[todayIdx],
+    tempMax: d.daily?.temperature_2m_max?.[todayIdx],
+    tempMin: d.daily?.temperature_2m_min?.[todayIdx],
+    precip: d.daily?.precipitation_sum?.[todayIdx],
+    dailyRaw
+  };
+}
+
+// Score de santé quotidien (réutilisé pour l'historique)
+function dailyHealthScore(m, tempMax, tempMin, isOlivier){
+  const [lo, hi] = isOlivier ? [0.14, 0.28] : [0.20, 0.36];
+  let mp = 0;
+  if (m < lo) mp = Math.min(28, (lo - m) * 200);
+  else if (m > hi) mp = Math.min(42, (m - hi) * (isOlivier ? 280 : 200));
+  let tp = 0;
+  if (tempMin <= -5) tp += 18;
+  else if (tempMax >= 38) tp += 14;
+  return Math.round(Math.max(2, Math.min(100, 100 - mp - tp)));
+}
+
+function computeHealthIndex(env, tree) {
+  const variety = (tree.variety || '').toLowerCase();
+  const isOlivier = variety.includes('olivier') || variety.includes('olive');
+  const isPot = tree.location === 'pot';
+
+  // Humidité du sol pertinente selon l'emplacement
+  let m = isPot ? env.soilShallow : env.soilDeep;
+  if (typeof m !== 'number') m = env.soilShallow ?? env.soilDeep ?? 0.22;
+
+  // Fourchette idéale (m³/m³) selon variété
+  const [lo, hi] = isOlivier ? [0.14, 0.28] : [0.20, 0.36];
+
+  let moistPenalty = 0, moistState = 'good', moistLabel = 'Idéal';
+  if (m < lo) {
+    moistPenalty = Math.min(28, (lo - m) * 200);
+    moistState = m < lo * 0.6 ? 'warn' : 'mid';
+    moistLabel = 'Sec';
+  } else if (m > hi) {
+    // L'excès d'eau est plus pénalisant, surtout pour l'olivier
+    moistPenalty = Math.min(42, (m - hi) * (isOlivier ? 280 : 200));
+    moistState = 'warn';
+    moistLabel = 'Humide';
+  }
+
+  // Stress thermique
+  let tempPenalty = 0, tempState = 'good';
+  if (env.tempMin <= -5) { tempPenalty += 18; tempState = 'warn'; }
+  else if (env.tempMax >= 38) { tempPenalty += 14; tempState = 'warn'; }
+  else if (env.tempMax >= 33 || env.tempMin <= 0) { tempState = 'mid'; }
+
+  const score = Math.round(Math.max(2, Math.min(100, 100 - moistPenalty - tempPenalty)));
+
+  let label, cls, gauge;
+  if (score >= 82) { label = 'Excellente santé'; cls = 'excellent'; gauge = '#3d7a3d'; }
+  else if (score >= 62) { label = 'Bonne santé'; cls = 'bon'; gauge = 'var(--olive)'; }
+  else if (score >= 42) { label = 'À surveiller'; cls = 'vigilance'; gauge = '#c99a2e'; }
+  else { label = 'Attention requise'; cls = 'attention'; gauge = '#b13e2e'; }
+
+  // Recommandation contextuelle
+  let reco;
+  if (env.tempMin <= -5) {
+    reco = `Gel récent détecté (${Math.round(env.tempMin)}°C). Vérifiez la protection hivernale (voile, paillage)${isPot ? " et abritez le pot." : "."}`;
+  } else if (env.tempMax >= 38) {
+    reco = `Forte chaleur (${Math.round(env.tempMax)}°C). Surveillez l'humidité${isPot ? " du pot, plus sensible à la sécheresse." : " ; en pleine terre, un arrosage copieux ponctuel suffit."}`;
+  } else if (m > hi) {
+    reco = isOlivier
+      ? `Le sol est encore gorgé d'eau. N'arrosez surtout pas : l'olivier déteste l'excès d'humidité. Laissez-le sécher.`
+      : `Sol bien humide, inutile d'arroser cette semaine.`;
+  } else if (m < lo) {
+    reco = isPot
+      ? `Le substrat est sec. Un arrosage modéré, tôt le matin, fera du bien à votre arbre en pot.`
+      : `Sol sec ; en pleine terre, un arrosage copieux et espacé suffit si la sécheresse persiste.`;
+  } else {
+    reco = `Conditions idéales : votre arbre est dans son élément. Rien à faire, profitez-en simplement.`;
+  }
+
+  // Historique de santé sur les jours passés (à partir de la météo réelle)
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const history = (env.dailyRaw || [])
+    .filter(x => x.date <= todayStr)
+    .slice(-7)
+    .map(day => {
+      let dm = day.soil;
+      if (typeof dm !== 'number') dm = isOlivier ? 0.21 : 0.28;
+      return { date: day.date, score: dailyHealthScore(dm, day.tempMax ?? 15, day.tempMin ?? 8, isOlivier) };
+    });
+
+  return {
+    score, label, cls, gauge, reco, history,
+    moisture: { value: Math.round(m * 100), state: moistState, label: moistLabel },
+    temp: { value: Math.round(env.temp ?? env.tempMax ?? 0), state: tempState },
+    water: { value: (typeof env.et0 === 'number' ? env.et0.toFixed(1) : '—') }
+  };
+}
+
+function fmtTreeDate(ts){
+  const d = ts?.toDate?.() || (ts instanceof Date ? ts : null);
+  if(!d) return '';
+  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+}
+
+function getCareSchedule(variety, location, month){
+  const isPot = location === 'pot';
+  const monthNames = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const tasks = [
+    {m:[11,0,1], icon:'❄️', title:'Protection hivernale', desc: isPot ? "Abritez le pot du gel, ou rentrez-le si la température passe sous -5 °C." : "Paillez le pied. Un voile d'hivernage est conseillé en cas de gel intense."},
+    {m:[2,3], icon:'✂️', title:'Taille de fin d\'hiver', desc:"Aérez le cœur de l'arbre et équilibrez sa silhouette avant la reprise."},
+    {m:[3,4], icon:'🌱', title:'Fertilisation de printemps', desc:"Un apport d'engrais organique soutient la nouvelle pousse."},
+    {m:[5,6,7], icon:'💧', title:'Arrosage estival', desc: isPot ? "En pot, le substrat sèche vite : arrosez régulièrement, sans détremper." : "Arrosage copieux mais espacé. Laissez bien sécher entre deux."},
+    {m:[8,9], icon:'🫒', title:'Fin d\'été & récolte', desc:"Surveillez les fruits et les parasites ; la récolte des olives approche."},
+    {m:[10], icon:'🍂', title:'Préparation à l\'hiver', desc:"Réduisez progressivement les arrosages et préparez la protection."},
+  ];
+  return tasks.map(t => {
+    const dist = Math.min(...t.m.map(mm => (mm - month + 12) % 12));
+    const firstUpcoming = t.m.slice().sort((a,b) => ((a-month+12)%12) - ((b-month+12)%12))[0];
+    const period = monthNames[firstUpcoming].charAt(0).toUpperCase() + monthNames[firstUpcoming].slice(1);
+    return { ...t, dist, period };
+  }).sort((a,b) => a.dist - b.dist).slice(0,3).map(t => ({ ...t, now: t.dist === 0 }));
+}
+
+function healthHistoryHTML(history){
+  if (!history || history.length < 2) return '';
+  const dayLabels = ['D','L','M','M','J','V','S'];
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>Évolution de la vitalité</h4><span class="line"></span></div>
+    <div class="health-chart">
+      ${history.map(pt => {
+        const dt = new Date(pt.date);
+        const lbl = dayLabels[dt.getDay()];
+        const col = pt.score >= 82 ? '#3d7a3d' : pt.score >= 62 ? '#7d8c4e' : pt.score >= 42 ? '#c99a2e' : '#b13e2e';
+        return `<div class="hc-col"><div class="hc-bar" style="height:${Math.max(6, pt.score)}%;background:${col};"></div><span>${lbl}</span></div>`;
+      }).join('')}
+    </div>
+    <div class="hc-note">7 derniers jours · estimé d'après la météo</div>`;
+}
+
+function seasonalLetterHTML(tree){
+  const month = new Date().getMonth();
+  let season;
+  if (month <= 1 || month === 11) season = 'hiver';
+  else if (month <= 4) season = 'printemps';
+  else if (month <= 7) season = 'ete';
+  else season = 'automne';
+  const firstName = (currentCustomerData?.name || '').split(' ')[0] || '';
+  const hi = firstName ? `${firstName}, ` : '';
+  const treeName = tree.name || tree.variety || 'votre arbre';
+  const isOlivier = /oliv/i.test(tree.variety || '');
+  const year = new Date().getFullYear();
+
+  const letters = {
+    hiver: { tag: `Hiver ${year}`, body: [
+      `${hi}l'hiver enveloppe ${treeName} de son silence.`,
+      `C'est une saison de repos : ${isOlivier ? "votre olivier ralentit et économise ses forces" : "votre arbre se met en veille"}. Surveillez surtout le gel, et évitez tout excès d'eau — les racines redoutent l'humidité froide.`,
+      `Je veille sur lui par la pensée, et reste à votre écoute au moindre doute.`
+    ]},
+    printemps: { tag: `Printemps ${year}`, body: [
+      `${hi}le printemps réveille ${treeName}.`,
+      `La sève remonte, les bourgeons se préparent. C'est le moment d'une taille légère et d'un premier apport nutritif pour accompagner cette renaissance.`,
+      `Quelle joie de le voir repartir. Profitez de ce spectacle.`
+    ]},
+    ete: { tag: `Été ${year}`, body: [
+      `${hi}${treeName} déploie toute sa vigueur sous le soleil.`,
+      `${isOlivier ? "L'olivier adore la chaleur" : "Votre arbre apprécie la lumière"}, mais restez attentif aux sécheresses prolongées : un arrosage généreux mais espacé vaut mieux que de petits arrosages fréquents.`,
+      `Belle saison à vous, à l'ombre de ses feuilles.`
+    ]},
+    automne: { tag: `Automne ${year}`, body: [
+      `${hi}l'automne installe ${treeName} dans une lumière plus douce.`,
+      `La croissance ralentit ; réduisez progressivement les arrosages et préparez l'arbre à l'hiver qui vient.`,
+      `Une saison paisible. Prenez soin de vous, je prends soin de lui.`
+    ]}
+  };
+  const L = letters[season];
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>La lettre de saison</h4><span class="line"></span></div>
+    <div class="season-letter">
+      <div class="season-tag">${escapeHtml(L.tag)}</div>
+      <div class="body">${L.body.map(p => `<p>${escapeHtml(p)}</p>`).join('')}</div>
+      <div class="sig">Rachid<span>Votre pépiniériste</span></div>
+    </div>`;
+}
+
+function certificateHTML(tree){
+  const acq = fmtTreeDate(tree.createdAt) || 'récemment';
+  const certId = tree.certId || 'En cours d\'émission';
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>Certificat d'authenticité</h4><span class="line"></span></div>
+    <div class="certificate">
+      <div class="cert-head">
+        <div class="crest">UJ</div>
+        <div class="title">Un Jour Un Olivier</div>
+        <div class="sub">Certificat d'authenticité</div>
+      </div>
+      <div class="cert-rows">
+        <div class="cert-row"><span class="k">Variété</span><span class="v">${escapeHtml(tree.variety || '—')}</span></div>
+        ${tree.age ? `<div class="cert-row"><span class="k">Âge estimé</span><span class="v">${escapeHtml(tree.age)}</span></div>` : ''}
+        ${tree.origin ? `<div class="cert-row"><span class="k">Origine</span><span class="v">${escapeHtml(tree.origin)}</span></div>` : ''}
+        ${tree.dims ? `<div class="cert-row"><span class="k">Mensurations</span><span class="v">${escapeHtml(tree.dims)}</span></div>` : ''}
+        <div class="cert-row"><span class="k">Emplacement</span><span class="v">${tree.location === 'pot' ? 'En pot' : 'Pleine terre'}</span></div>
+      </div>
+      <div class="cert-foot">
+        <div class="num">N° de certificat<b>${escapeHtml(certId)}</b></div>
+        <div class="sig">Acquis le ${escapeHtml(acq)}<span>La Pépinière</span></div>
+      </div>
+      <button class="cert-download" onclick="downloadCertificate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Télécharger mon certificat
+      </button>
+    </div>`;
+}
+
+function careScheduleHTML(tree){
+  const items = getCareSchedule(tree.variety || '', tree.location || 'ground', new Date().getMonth());
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>Vos prochains soins</h4><span class="line"></span></div>
+    ${items.map(it => `
+      <div class="care-item ${it.now ? 'now' : ''}">
+        <div class="ico">${it.icon}</div>
+        <div class="body">
+          <div class="when">${it.now ? 'Ce mois-ci' : escapeHtml(it.period)}</div>
+          <h5>${escapeHtml(it.title)}</h5>
+          <p>${escapeHtml(it.desc)}</p>
+        </div>
+      </div>`).join('')}`;
+}
+
+function journalHTML(tree){
+  const entries = (tree.journal || []).slice().reverse();
+  const acq = fmtTreeDate(tree.createdAt);
+  entries.push({ date: acq, title: 'Entrée dans votre collection', note: 'Cet arbre d\'exception rejoint votre patrimoine vert.', milestone: true });
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>Le carnet de l'arbre</h4><span class="line"></span></div>
+    <div class="journal">
+      ${entries.map(e => `
+        <div class="journal-entry ${e.milestone ? 'milestone' : ''}">
+          <div class="date">${escapeHtml(e.date || '')}</div>
+          <h5>${escapeHtml(e.title || '')}</h5>
+          ${e.note ? `<p>${escapeHtml(e.note)}</p>` : ''}
+        </div>`).join('')}
+    </div>`;
+}
+
+function warrantyHTML(tree){
+  const created = tree.createdAt?.toDate?.();
+  let until = '', active = true;
+  if (created) {
+    const end = new Date(created);
+    end.setFullYear(end.getFullYear() + 2);
+    until = end.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    active = end > new Date();
+  }
+  const check = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`;
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>Garantie & accompagnement</h4><span class="line"></span></div>
+    <div class="warranty">
+      <div class="warranty-status ${active ? '' : 'expired'}">
+        <div class="shield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div>
+          <b>Garantie de reprise ${active ? 'active' : 'à renouveler'}</b>
+          ${until ? `<span>Valable jusqu'en ${escapeHtml(until)}</span>` : `<span>Incluse avec votre acquisition</span>`}
+        </div>
+      </div>
+      <ul class="warranty-list">
+        <li>${check} Reprise garantie en cas de défaillance non liée à l'entretien</li>
+        <li>${check} Conseil d'entretien illimité auprès de votre pépiniériste</li>
+        <li>${check} Visite-diagnostic à domicile sur demande</li>
+      </ul>
+    </div>`;
+}
+
+function conciergeHTML(){
+  return `
+    <div class="dash-section-head"><span class="line"></span><h4>Votre conciergerie</h4><span class="line"></span></div>
+    <div class="concierge">
+      <div class="concierge-avatar">R</div>
+      <div class="concierge-txt">
+        <div class="lbl">Votre conseiller dédié</div>
+        <div class="nm">Rachid</div>
+        <div class="role">Un Jour Un Olivier · Chanas</div>
+      </div>
+    </div>
+    <div class="concierge-actions">
+      <button class="concierge-btn call" onclick="window.location.href='tel:+33603364824'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+        Appeler
+      </button>
+      <button class="concierge-btn wa" onclick="window.open('https://wa.me/33603364824','_blank')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.5-1.2-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.2.1.4.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.4.3.1.2.1.7-.1 1.3z"/></svg>
+        WhatsApp
+      </button>
+    </div>
+    <button class="concierge-rdv" onclick="openVisitRequest()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
+      Demander une visite d'entretien
+    </button>`;
+}
+
+function renderTreeDashboard(tree, env, h) {
+  const body = document.getElementById('treeDashBody');
+  if (!body) return;
+  window._dashTree = tree; // pour le téléchargement du certificat
+  body.innerHTML = `
+    <div class="tree-dash-hero">
+      ${tree.photo ? `<img src="${escapeHtml(tree.photo)}" alt="">` : ''}
+      <div class="tree-dash-hero-content">
+        <div class="variety">${escapeHtml(tree.variety || '')}${tree.location ? (tree.location === 'pot' ? ' · En pot' : ' · Pleine terre') : ''}</div>
+        <h2>${escapeHtml(tree.name || tree.variety || 'Mon arbre')}</h2>
+      </div>
+    </div>
+
+    <div class="health-block">
+      <div class="health-gauge" id="healthGauge" style="--gauge:${h.gauge};">
+        <div class="health-gauge-inner"><span class="num">${h.score}</span><div class="unit">/ 100</div></div>
+      </div>
+      <div class="health-info">
+        <div class="label">Indice de santé</div>
+        <h3 class="${h.cls}">${escapeHtml(h.label)}</h3>
+        <p>Estimé à partir des conditions locales et du profil de votre arbre.</p>
+      </div>
+    </div>
+
+    ${healthHistoryHTML(h.history)}
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="ico">🌡️</div>
+        <div class="val">${h.temp.value}<span class="u">°C</span></div>
+        <div class="name">Température</div>
+        <span class="state ${h.temp.state === 'good' ? 'good' : h.temp.state === 'warn' ? 'warn' : 'mid'}">${h.temp.state === 'good' ? 'Clément' : h.temp.state === 'warn' ? 'Extrême' : 'Modéré'}</span>
+      </div>
+      <div class="metric-card">
+        <div class="ico">💧</div>
+        <div class="val">${h.moisture.value}<span class="u">%</span></div>
+        <div class="name">Humidité sol</div>
+        <span class="state ${h.moisture.state}">${escapeHtml(h.moisture.label)}</span>
+      </div>
+      <div class="metric-card">
+        <div class="ico">🚿</div>
+        <div class="val">${h.water.value}<span class="u">mm</span></div>
+        <div class="name">Besoin eau/j</div>
+        <span class="state mid">Évapo.</span>
+      </div>
+    </div>
+
+    <div class="dash-reco">
+      <span class="label">La recommandation du jour</span>
+      ${escapeHtml(h.reco)}
+    </div>
+
+    ${seasonalLetterHTML(tree)}
+    ${certificateHTML(tree)}
+    ${careScheduleHTML(tree)}
+    ${journalHTML(tree)}
+    ${warrantyHTML(tree)}
+    ${conciergeHTML()}
+
+    <div class="dash-source">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Estimation d'après la météo de ${escapeHtml(env.cityName || currentCustomerData?.city || '')}
+    </div>
+
+    <div class="dash-sensor-teaser">
+      <div class="ico">📡</div>
+      <div class="txt">
+        <b>Bientôt : le capteur connecté</b>
+        <span>Pour une mesure réelle de l'humidité de votre sol, en direct. Disponible prochainement pour nos clients privilégiés.</span>
+      </div>
+    </div>
+  `;
+
+  // Animation de la jauge (0 → score)
+  const gauge = document.getElementById('healthGauge');
+  if (gauge) {
+    let cur = 0;
+    const target = h.score;
+    const tick = () => {
+      cur += Math.max(1, Math.round(target / 28));
+      if (cur >= target) cur = target;
+      gauge.style.setProperty('--score', cur);
+      if (cur < target) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
 }
 
 /* ============================================================
